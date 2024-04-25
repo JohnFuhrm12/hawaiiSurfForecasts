@@ -8,7 +8,6 @@
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-    background-attachment: fixed;
     width: 100%;
     height: 70vh;
 }
@@ -22,4 +21,29 @@
     top: 100px;
     left: 60px;
     padding: 10px;
+}
+
+.liveCam {
+    border: solid 4px #0084ff;
+    border-radius: 5px;
+    margin: 20px;
+    cursor: pointer;
+}
+
+.homeSectionSplit {
+    display: flex;
+    flex-direction: row;
+}
+
+.sectionTitle {
+    font-size: 26px;
+    text-align: center;
+}
+
+.leaflet-container {
+    width: 40vw;
+    height: 45vh;
+    margin-top: 20px;
+    border: solid 4px #0084ff;
+    border-radius: 5px;
 }
