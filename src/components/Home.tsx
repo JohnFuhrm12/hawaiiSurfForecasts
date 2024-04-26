@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './componentStyles/home.css';
 import 'leaflet/dist/leaflet.css';
@@ -7,8 +7,24 @@ import ReactPlayer from 'react-player/lazy';
 import { MapContainer, TileLayer, useMap, LayersControl } from 'react-leaflet';
 import LeafletVelocity from "./LeafletVelocity";
 
+import axios from 'axios';
+
 function Home( {...props} ) {
+  const [topArticles, setTopArticles] = useState([]);
   const layerControlRef = useRef();
+
+  const newsAPIKey = process.env.REACT_APP_NEWS_API_KEY;
+
+  useEffect(() => {
+    const articleQuery = '+surf+hawaii';
+
+    const articlesRes = axios.get(`https://newsapi.org/v2/everything?q=${articleQuery}&apiKey=${newsAPIKey}`)
+    .then((res) => {
+      console.log(res)
+      const articles = res.data.articles;
+      setTopArticles([articles[0], articles[1], articles[2]]);
+    });
+  }, [])
 
     return (
       <div id='homePage'>
@@ -29,6 +45,19 @@ function Home( {...props} ) {
               <LeafletVelocity ref={layerControlRef} />
             </MapContainer>
             <h2 className='sectionTitle sectionTitleLeft'>Current Winds</h2>
+          </div>
+        </div>
+        <div id='articlesSection' className='homeSection'>
+          <h2 id='articlesSectionTitle' className='sectionTitle sectionTitleLeft'>Latest News</h2>
+          <div id='articlesContainer'>
+            {topArticles?.map((article:any) => {
+              return (
+                <div className='articleContainer'>
+                  <img className='articleImg' src={article.urlToImage} alt={article.title}/>
+                  <h2 className='articleTitle'>{article?.title}</h2>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
