@@ -16,13 +16,15 @@ function Home( {...props} ) {
   const newsAPIKey = process.env.REACT_APP_NEWS_API_KEY;
 
   useEffect(() => {
-    const articleQuery = '+surf+hawaii';
+    const articleQuery = 'surf OR surfing OR wsl OR surfer OR stoked OR surfboard OR pointbreak OR slab';
+    const domains = 'surfline.com,worldsurfleague.com,si.com,surfer.com,surfnewsnetwork.com,theinertia.com,surfertoday.com,carvemag.com,bbc.com,hawaiinewsnow.com,khon2.com,bigislandnow.com';
 
-    const articlesRes = axios.get(`https://newsapi.org/v2/everything?q=${articleQuery}&apiKey=${newsAPIKey}`)
+    const articlesRes = axios.get(`https://newsapi.org/v2/everything?q=${articleQuery}&domains=${domains}&sortBy=publishedAt&language=en&apiKey=${newsAPIKey}`)
     .then((res) => {
       console.log(res)
       const articles = res.data.articles;
-      setTopArticles([articles[0], articles[1], articles[2]]);
+
+      setTopArticles(articles.slice(0, 3));
     });
   }, [])
 
@@ -52,8 +54,8 @@ function Home( {...props} ) {
           <div id='articlesContainer'>
             {topArticles?.map((article:any) => {
               return (
-                <div className='articleContainer'>
-                  <img className='articleImg' src={article.urlToImage} alt={article.title}/>
+                <div className='articleContainer' key={article?.publishedAt}>
+                  <img className='articleImg' src={article?.urlToImage} alt={article.title}/>
                   <h2 className='articleTitle'>{article?.title}</h2>
                 </div>
               )
