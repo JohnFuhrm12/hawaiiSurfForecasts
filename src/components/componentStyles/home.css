@@ -26,13 +26,14 @@
 .liveCam {
     border: solid 4px #0084ff;
     border-radius: 5px;
-    margin: 20px;
     cursor: pointer;
 }
 
 .homeSectionSplit {
     display: flex;
     flex-direction: row;
+    justify-content: space-around;
+    margin: 2%;
 }
 
 .sectionTitle {
@@ -40,10 +41,36 @@
     text-align: center;
 }
 
+.sectionTitleLeft {
+    text-align: left;
+    margin-bottom: 8px;
+}
+
+.sectionLink {
+    font-size: 20px;
+    text-decoration: none;
+    color: #006acd;
+    transition: 0.3s;
+}
+
+.sectionLink:hover {
+    transition: 0.3s;
+    color: #00bfff;
+}
+
 .leaflet-container {
     width: 40vw;
-    height: 45vh;
-    margin-top: 20px;
-    border: solid 4px #0084ff;
-    border-radius: 5px;
+    height: 50vh;
+}
+
+@media (max-width: 750px) {
+    .homeSectionSplit {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .leaflet-container {
+        width: 90vw;
+        height: 40vh;
+    }
 }

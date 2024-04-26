@@ -24,13 +24,15 @@ const LeafletVelocity = forwardRef((props, ref) => {
             displayValues: true,
             displayOptions: {
               velocityType: "Water",
-              position: "bottomleft",
+              position: "left",
               emptyString: "No water data"
             },
             data: data,
-            maxVelocity: 30,
-            velocityScale: 0.01 // arbitrary default 0.005
+            maxVelocity: 10,
+            velocityScale: 0.015
           });
+
+          windGlobalLayer.addTo(map);
   
           if (ref.current && windGlobalLayer)
             ref.current.addOverlay(windGlobalLayer, "Wind");
@@ -38,7 +40,7 @@ const LeafletVelocity = forwardRef((props, ref) => {
         .catch((err) => console.log(err));
   
    return () => {
-        mounted = false;
+        mounted = true;
         if (ref.current) {
           ref.current.removeOverlay(windLayer);
         }
