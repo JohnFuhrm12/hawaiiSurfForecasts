@@ -24,7 +24,7 @@
 }
 
 .liveCam {
-    border: solid 4px #0084ff;
+    border: solid 4px #0a438e;
     border-radius: 5px;
     cursor: pointer;
 }
@@ -90,7 +90,7 @@
     width: 440px;
     height: 540px;
     overflow: hidden;
-    border-radius: 20px;
+    border-radius: 10px;
 }
 
 .articleImg {

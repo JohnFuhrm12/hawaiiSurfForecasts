@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './componentStyles/home.css';
 import 'leaflet/dist/leaflet.css';
 
@@ -14,9 +14,10 @@ function Home( {...props} ) {
   const layerControlRef = useRef();
 
   const newsAPIKey = process.env.REACT_APP_NEWS_API_KEY;
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const articleQuery = 'surf OR surfing OR wsl OR surfer OR stoked OR surfboard OR pointbreak OR slab';
+    const articleQuery = 'surf OR surfing OR wsl OR surfer OR stoked OR surfboard OR pointbreak OR slab -footballers';
     const domains = 'surfline.com,worldsurfleague.com,si.com,surfer.com,surfnewsnetwork.com,theinertia.com,surfertoday.com,carvemag.com,bbc.com,hawaiinewsnow.com,khon2.com,bigislandnow.com';
 
     const articlesRes = axios.get(`https://newsapi.org/v2/everything?q=${articleQuery}&domains=${domains}&sortBy=publishedAt&language=en&apiKey=${newsAPIKey}`)
@@ -25,6 +26,7 @@ function Home( {...props} ) {
       const articles = res.data.articles;
 
       setTopArticles(articles.slice(0, 3));
+      props.setArticle(articles[0]);
     });
   }, [])
 
@@ -53,8 +55,13 @@ function Home( {...props} ) {
           <h2 id='articlesSectionTitle' className='sectionTitle sectionTitleLeft'>Latest News</h2>
           <div id='articlesContainer'>
             {topArticles?.map((article:any) => {
+              function viewArticle() {
+                props.setArticle(article);
+                navigate('/news');
+              }
+
               return (
-                <div className='articleContainer' key={article?.publishedAt}>
+                <div onClick={viewArticle} className='articleContainer' key={article?.publishedAt}>
                   <img className='articleImg' src={article?.urlToImage} alt={article.title}/>
                   <h2 className='articleTitle'>{article?.title}</h2>
                 </div>

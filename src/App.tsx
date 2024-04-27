@@ -4,12 +4,14 @@ import './App.css';
 
 import Navbar from './components/Navbar';
 import Home from './components/Home';
+import Article from './components/Article';
 
 function App() {
-  const testProp = 'test';
+  const [article, setArticle] = useState();
 
   const props = {
-    testProp
+    article,
+    setArticle
   }
 
   return (
@@ -17,6 +19,7 @@ function App() {
       <Navbar {...props}/>
       <Routes>
         <Route path='/' element={ <Home {...props}/> }/>
+        <Route path='/news' element={ <Article {...props}/> }/>
       </Routes>
     </>
   )
