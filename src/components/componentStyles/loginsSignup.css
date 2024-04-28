@@ -17,6 +17,18 @@
     font-size: 20px;
 }
 
+.signupLoginSubtitleColor {
+    color: var(--brand-blue);
+    text-decoration: none;
+    transition: 0.5s;
+}
+
+.signupLoginSubtitleColor:hover {
+    cursor: pointer;
+    transition: 0.5s;
+    opacity: 0.8;
+}
+
 .loginSignupForm {
     display: flex;
     flex-direction: column;
@@ -45,11 +57,21 @@
     padding-bottom: 12px;
     border: solid 4px var(--brand-blue);
     border-radius: 5px;
-    margin-top: 10px;
+    margin-top: 30px;
 }
 
 .loginSignupButton:hover {
     cursor: pointer;
     transition: 0.5s;
     opacity: 0.8;
+}
+
+.passwordCheck {
+    margin: 0;
+    margin-bottom: -20px;
+    text-align: left;
+}
+
+.passwordCheckIndicator {
+    margin-right: 10px;
 }
