@@ -3,6 +3,12 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import './componentStyles/loginsSignup.css';
 
+import firebaseInit from './firebaseConfig';
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
+firebaseInit();
+const auth = getAuth();
+
 function Signup ( {...props} ) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -13,6 +19,17 @@ function Signup ( {...props} ) {
     const [validPasswordNum, setValidPasswordNum] = useState(false);
     const [validPasswordCapital, setValidPasswordCapital] = useState(false);
     const [validPasswordMatch, setValidPasswordMatch] = useState(false);
+
+    function createFirebaseUser() {
+        createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+        });
+    }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -44,10 +61,9 @@ function Signup ( {...props} ) {
             return toast.warn('Password not valid!');
         }
 
-        console.log(validName && validEmail && validPassword)
-
         if (validName && validEmail && validPassword) {
-            toast.success('Account created successfully!')
+            toast.success('Account created successfully!');
+            createFirebaseUser();
         }
     }
 

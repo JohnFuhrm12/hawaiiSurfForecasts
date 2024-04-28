@@ -22,7 +22,6 @@ function Home( {...props} ) {
 
     const articlesRes = axios.get(`https://newsapi.org/v2/everything?q=${articleQuery}&domains=${domains}&sortBy=publishedAt&language=en&apiKey=${newsAPIKey}`)
     .then((res) => {
-      console.log(res)
       const articles = res.data.articles;
 
       setTopArticles(articles.slice(0, 3));
