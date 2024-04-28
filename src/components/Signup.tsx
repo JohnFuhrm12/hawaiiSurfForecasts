@@ -5,9 +5,13 @@ import './componentStyles/loginsSignup.css';
 
 import firebaseInit from './firebaseConfig';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore"; 
 
 firebaseInit();
 const auth = getAuth();
+const app = firebaseInit();
+const db = getFirestore(app);
 
 function Signup ( {...props} ) {
     const [name, setName] = useState('');
@@ -22,11 +26,19 @@ function Signup ( {...props} ) {
 
     const navigate = useNavigate();
 
+    const createUserInfo = async () => {
+        await setDoc(doc(db, "users", email), {
+            name: name,
+            email: email,
+          });
+    }
+
     function createFirebaseUser() {
         createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             const user = userCredential.user;
             props.setCurrentUser(user);
+            createUserInfo();
             navigate('/login');
         })
         .catch((error) => {

@@ -62,7 +62,7 @@ function Login( {...props} ) {
             <form className='loginSignupForm' onSubmit={(e) => validateForm(e)}>
                 <input className='loginSignupInput' onChange={(e) => setEmail(e.target.value)} value={email} placeholder='Email'/>
                 <input type='password' className='loginSignupInput' onChange={(e) => setPassword(e.target.value)} value={password} placeholder='Password'/>
-                <button type='submit' className='loginSignupButton'>Login</button>
+                <button type='submit' id='loginButton' className='loginSignupButton'>Login</button>
             </form>
         </div>
     )
