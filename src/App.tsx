@@ -8,15 +8,19 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Article from './components/Article';
 import Signup from './components/Signup';
+import Login from './components/Login';
 
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
+  const [currentUser, setCurrentUser] = useState();
   const [article, setArticle] = useState();
 
   const props = {
     article,
-    setArticle
+    setArticle,
+    currentUser,
+    setCurrentUser
   }
 
   return (
@@ -26,6 +30,7 @@ function App() {
       <Routes>
         <Route path='/' element={ <Home {...props} /> }/>
         <Route path='/signup' element={ <Signup {...props} /> }/>
+        <Route path='/login' element={ <Login {...props} /> }/>
         <Route path='/news' element={ <Article {...props} /> }/>
       </Routes>
       <ToastContainer />

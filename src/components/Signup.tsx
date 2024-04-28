@@ -115,7 +115,7 @@ function Signup ( {...props} ) {
     return (
         <div className='loginSignupContainer'>
             <h1 className='signupLoginTitle'>Create Your Free Account</h1>
-            <h2 className='signupLoginSubtitle'>Already have an account? <Link className="signupLoginSubtitleColor" to='/'>Login</Link></h2>
+            <h2 className='signupLoginSubtitle'>Already have an account? <Link className="signupLoginSubtitleColor" to='/login'>Login</Link></h2>
             <form className='loginSignupForm' onSubmit={(e) => validateForm(e)}>
                 <input className='loginSignupInput' onChange={(e) => setName(e.target.value)} value={name} placeholder='Name'/>
                 <input className='loginSignupInput' onChange={(e) => setEmail(e.target.value)} value={email} placeholder='Email'/>
