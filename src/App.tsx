@@ -13,7 +13,7 @@ import Login from './components/Login';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
-  const [currentUser, setCurrentUser] = useState();
+  const [currentUser, setCurrentUser] = useState(null);
   const [article, setArticle] = useState();
 
   const props = {

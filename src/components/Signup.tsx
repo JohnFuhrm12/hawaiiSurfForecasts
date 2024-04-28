@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import './componentStyles/loginsSignup.css';
 
@@ -20,10 +20,14 @@ function Signup ( {...props} ) {
     const [validPasswordCapital, setValidPasswordCapital] = useState(false);
     const [validPasswordMatch, setValidPasswordMatch] = useState(false);
 
+    const navigate = useNavigate();
+
     function createFirebaseUser() {
         createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             const user = userCredential.user;
+            props.setCurrentUser(user);
+            navigate('/login');
         })
         .catch((error) => {
             const errorCode = error.code;
