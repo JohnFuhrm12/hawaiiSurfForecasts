@@ -1,0 +1,55 @@
+:root {
+    --brand-blue: #0c3e89;
+    --brand-text: white;
+}
+
+.loginSignupContainer {
+    text-align: center;
+}
+
+.signupLoginTitle {
+    margin-bottom: 0;
+}
+
+.signupLoginSubtitle {
+    margin-top: 10px;
+    margin-bottom: 30px;
+    font-size: 20px;
+}
+
+.loginSignupForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 400px;
+    margin: 0 auto;
+}
+
+.loginSignupInput {
+    font-size: 20px;
+    outline: none;
+    border: none;
+    border-bottom: solid 2px black;
+    padding-bottom: 10px;
+}
+
+.loginSignupButton {
+    background-color: var(--brand-blue);
+    color: var(--brand-text);
+    font-size: 25px;
+    transition: 0.5s;
+    width: 60%;
+    margin: 0 auto;
+    padding: 10px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    border: solid 4px var(--brand-blue);
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.loginSignupButton:hover {
+    cursor: pointer;
+    transition: 0.5s;
+    opacity: 0.8;
+}
