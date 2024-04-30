@@ -17,7 +17,7 @@ function Home( {...props} ) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const articleQuery = 'surf OR surfing OR wsl OR surfer OR stoked OR surfboard OR pointbreak OR slab -footballers -stamford';
+    const articleQuery = 'surf OR surfing OR surfer OR stoked OR surfboard OR pointbreak';
     const domains = 'surfline.com,worldsurfleague.com,si.com,surfer.com,surfnewsnetwork.com,theinertia.com,surfertoday.com,carvemag.com,bbc.com,hawaiinewsnow.com,khon2.com,bigislandnow.com';
 
     const articlesRes = axios.get(`https://newsapi.org/v2/everything?q=${articleQuery}&domains=${domains}&sortBy=publishedAt&language=en&apiKey=${newsAPIKey}`)
