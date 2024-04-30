@@ -1,0 +1,47 @@
+#forecastsContainer {
+    display: flex;
+    flex-direction: row;
+}
+
+#forecastsSelectionContainer {
+    width: 45vw;
+    overflow-y: scroll;
+    padding-inline: 2%;
+    padding-top: 15px;
+    background-color: rgb(239, 239, 239);
+}
+
+#forecastsTitle {
+    font-size: 25px;
+}
+
+.locationCard {
+    width: 300px;
+    border-radius: 10px;
+    background-color: white;
+    padding-bottom: 10px;
+    transition: 0.5s;
+}
+
+.locationCard:hover {
+    cursor: pointer;
+    transition: 0.5s;
+    box-shadow: 10px 5px 5px rgba(0,0,0,.34);
+    transform: translateY(-4px);
+}
+
+.locationCardImg {
+    width: 100%;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.locationCardName {
+    font-size: 20px;
+    padding-left: 10px;
+}
+
+#forecastsMapContainer .leaflet-container {
+    width: 55vw;
+    height: 100vh;
+}

@@ -58,7 +58,7 @@
     color: #00bfff;
 }
 
-.leaflet-container {
+#homeMapContainer .leaflet-container  {
     width: 40vw;
     height: 50vh;
 }
