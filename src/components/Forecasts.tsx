@@ -54,7 +54,7 @@ function Forecasts( {...props} ) {
             <div id='forecastsSelectionContainer'>
                 <h1 id='forecastsTitle'>Surf Forecasts</h1>
                 <div id='forecastsGrid'>
-                {!loaded ?
+                {surfSpots.length < 1 ?
                 <>
                 {surfSpotsSkeleton.map((location:any) => {
                     return (
@@ -69,7 +69,8 @@ function Forecasts( {...props} ) {
                 {surfSpots.map((location:any) => {
                     return (
                         <div className='locationCard' key={location.id}>
-                            <img className='locationCardImg' src={location.imgLink} onLoad={() => setLoaded(true)} alt={location.name} />
+                            {!loaded ? <div className='locationCardSkeletonImg'/> : <></>}
+                            <img style={loaded ? {} : { display: 'none' }} className='locationCardImg' src={location.imgLink} onLoad={() => setLoaded(true)} alt={location.name} />
                             <h2 className='locationCardName'>{location.name}</h2>
                         </div>
                     )
