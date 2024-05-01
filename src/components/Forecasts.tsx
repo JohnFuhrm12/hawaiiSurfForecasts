@@ -20,6 +20,8 @@ function Forecasts( {...props} ) {
     const [geoMarkersSouthShore, setGeoMarkersSouthShore] = useState([]);
     const [geoMarkersMaui, setGeoMarkersMaui] = useState([]);
 
+    const [loaded, setLoaded] = useState(false);
+
     const surfSpotsSkeleton = [1, 2, 3, 4, 5, 6]
 
     const getSurfSpots = async () => {
@@ -52,7 +54,7 @@ function Forecasts( {...props} ) {
             <div id='forecastsSelectionContainer'>
                 <h1 id='forecastsTitle'>Surf Forecasts</h1>
                 <div id='forecastsGrid'>
-                {surfSpots.length < 1 ?
+                {!loaded ?
                 <>
                 {surfSpotsSkeleton.map((location:any) => {
                     return (
@@ -67,7 +69,7 @@ function Forecasts( {...props} ) {
                 {surfSpots.map((location:any) => {
                     return (
                         <div className='locationCard' key={location.id}>
-                            <img className='locationCardImg' src={location.imgLink} alt={location.name} />
+                            <img className='locationCardImg' src={location.imgLink} onLoad={() => setLoaded(true)} alt={location.name} />
                             <h2 className='locationCardName'>{location.name}</h2>
                         </div>
                     )
