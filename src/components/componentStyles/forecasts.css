@@ -5,10 +5,18 @@
 
 #forecastsSelectionContainer {
     width: 45vw;
+    height: 100vh;
     overflow-y: scroll;
-    padding-inline: 2%;
+    padding-inline: 1.2%;
     padding-top: 15px;
     background-color: rgb(239, 239, 239);
+}
+
+#forecastsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding-bottom: 100px;
 }
 
 #forecastsTitle {
@@ -32,8 +40,10 @@
 
 .locationCardImg {
     width: 100%;
+    height: 200px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
+    object-fit: cover;
 }
 
 .locationCardName {
@@ -44,4 +54,23 @@
 #forecastsMapContainer .leaflet-container {
     width: 55vw;
     height: 100vh;
+}
+
+.locationCardSkeleton {
+    width: 300px;
+    border-radius: 10px;
+    background-color: white;
+    padding-bottom: 10px;
+}
+
+.locationCardSkeletonImg {
+    width: 100%;
+    height: 200px;
+    background-color: rgb(207, 207, 207);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.locationCardSkeletonText {
+    height: 50px;
 }
