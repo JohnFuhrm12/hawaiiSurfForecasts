@@ -61,6 +61,14 @@
     border-radius: 10px;
     background-color: white;
     padding-bottom: 10px;
+    transition: 0.5s;
+}
+
+.locationCardSkeleton:hover {
+    cursor: pointer;
+    transition: 0.5s;
+    box-shadow: 10px 5px 5px rgba(0,0,0,.34);
+    transform: translateY(-4px);
 }
 
 .locationCardSkeletonImg {
