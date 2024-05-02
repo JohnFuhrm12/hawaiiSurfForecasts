@@ -1,3 +1,8 @@
+:root {
+    --brand-blue: #0c3e89;
+    --brand-text: white;
+}
+
 #forecastsContainer {
     display: flex;
     flex-direction: row;
@@ -81,4 +86,14 @@
 
 .locationCardSkeletonText {
     height: 56px;
+}
+
+.geoMarkerPopup {
+    transition: 0.5s;
+}
+
+.geoMarkerPopup:hover {
+    cursor: pointer;
+    transition: 0.5s;
+    color: var(--brand-blue);
 }

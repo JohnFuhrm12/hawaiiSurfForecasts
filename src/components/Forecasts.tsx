@@ -90,10 +90,14 @@ function Forecasts( {...props} ) {
                     </LayersControl>
                     <MarkerClusterGroup>
                     {geoMarkersNorthShore.map((marker:any) => {
+                        function showForecastDetails() {
+                            navigate(`/forecasts/${marker.slug}`);
+                        }
+
                         return (
                             <Marker position={marker.coordinates}>
                                 <Popup>
-                                    <h3 className='geoMarkerPopup'>{marker.popup}</h3>
+                                    <h3 onClick={showForecastDetails} className='geoMarkerPopup'>{marker.popup}</h3>
                                 </Popup>
                             </Marker>
                         )
@@ -101,10 +105,14 @@ function Forecasts( {...props} ) {
                     </MarkerClusterGroup>
                     <MarkerClusterGroup>
                     {geoMarkersSouthShore.map((marker:any) => {
+                        function showForecastDetails() {
+                            navigate(`/forecasts/${marker.slug}`);
+                        }
+
                         return (
                             <Marker position={marker.coordinates}>
                                 <Popup>
-                                    <h3 className='geoMarkerPopup'>{marker.popup}</h3>
+                                    <h3 onClick={showForecastDetails} className='geoMarkerPopup'>{marker.popup}</h3>
                                 </Popup>
                             </Marker>
                         )
@@ -112,10 +120,14 @@ function Forecasts( {...props} ) {
                     </MarkerClusterGroup>
                     <MarkerClusterGroup>
                     {geoMarkersMaui.map((marker:any) => {
+                        function showForecastDetails() {
+                            navigate(`/forecasts/${marker.slug}`);
+                        }
+
                         return (
                             <Marker position={marker.coordinates}>
                                 <Popup>
-                                    <h3 className='geoMarkerPopup'>{marker.popup}</h3>
+                                    <h3 onClick={showForecastDetails} className='geoMarkerPopup'>{marker.popup}</h3>
                                 </Popup>
                             </Marker>
                         )
