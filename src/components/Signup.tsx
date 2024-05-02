@@ -26,10 +26,11 @@ function Signup ( {...props} ) {
 
     const navigate = useNavigate();
 
-    const createUserInfo = async () => {
+    const createUserInfo = async (user:any) => {
         await setDoc(doc(db, "users", email), {
             name: name,
             email: email,
+            userID: user.uid
           });
     }
 
@@ -38,7 +39,7 @@ function Signup ( {...props} ) {
         .then((userCredential) => {
             const user = userCredential.user;
             props.setCurrentUser(user);
-            createUserInfo();
+            createUserInfo(user);
             navigate('/login');
         })
         .catch((error) => {

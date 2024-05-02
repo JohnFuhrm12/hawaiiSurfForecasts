@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import firebaseInit from "./firebaseConfig";
 import { toast } from 'react-toastify';
 import './componentStyles/loginsSignup.css';
+
 firebaseInit();
 const auth = getAuth();
+const app = firebaseInit();
+const db = getFirestore(app);
 
 function Login( {...props} ) {
     const [email, setEmail] = useState('');
@@ -13,11 +18,19 @@ function Login( {...props} ) {
 
     const navigate = useNavigate();
 
+    const getUserDetails = async (userID:string) => {
+        const userRef = query(collection(db, "users"), where("userID", "==", userID));
+        const querySnapshot = await getDocs(userRef);
+        const validUsers = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id}));
+        props.setCurrentUserDetails(validUsers[0]);
+    }
+
     function loginUser() {
         signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
           props.setCurrentUser(user);
+          getUserDetails(user.uid);
           navigate('/');
         })
         .catch((error) => {

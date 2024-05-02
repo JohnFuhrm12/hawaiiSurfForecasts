@@ -78,7 +78,7 @@ function Forecasts( {...props} ) {
                 </div>
             </div>
             <div id='forecastsMapContainer'>
-                <MapContainer center={[20.200, -156.800]} zoom={8}>
+                <MapContainer center={[20.200, -156.800]} zoom={8} minZoom={3}>
                     <TileLayer attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community" url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"/>
                     <LayersControl position="topright">
                     </LayersControl>
