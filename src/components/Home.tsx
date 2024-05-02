@@ -41,7 +41,7 @@ function Home( {...props} ) {
             <Link className="sectionLink" to='/'>View Cams</Link>
           </div>
           <div id='homeMapContainer'>
-            <MapContainer center={[20.200, -157.290]} zoom={6.5}>
+            <MapContainer center={[20.200, -157.290]} zoom={7} minZoom={3}>
             <TileLayer attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community" url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"/>
               <LayersControl position="topright" ref={layerControlRef}>
               </LayersControl>

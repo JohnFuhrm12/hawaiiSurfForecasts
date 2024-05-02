@@ -5,10 +5,10 @@ import { MapContainer, TileLayer, useMap, LayersControl, Marker, Popup } from 'r
 import MarkerClusterGroup from 'react-leaflet-cluster';
 
 import firebaseInit from './firebaseConfig';
-import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { collection, query, getDocs, where } from "firebase/firestore";
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 firebaseInit();
 const app = firebaseInit();
@@ -22,7 +22,9 @@ function Forecasts( {...props} ) {
 
     const [loaded, setLoaded] = useState(false);
 
-    const surfSpotsSkeleton = [1, 2, 3, 4, 5, 6]
+    const surfSpotsSkeleton = [1, 2, 3, 4, 5, 6];
+
+    const navigate = useNavigate();
 
     const getSurfSpots = async () => {
         const spotsRef = query(collection(db, "surfSpots"));
@@ -67,8 +69,13 @@ function Forecasts( {...props} ) {
                 </>
                 : <></>}
                 {surfSpots.map((location:any) => {
+                    function showForecastDetails() {
+                        props.setCurrentSurfLocation(location);
+                        navigate('/surf-report');
+                    }
+
                     return (
-                        <div className='locationCard' key={location.id}>
+                        <div className='locationCard' onClick={showForecastDetails} key={location.id}>
                             {!loaded ? <div className='locationCardSkeletonImg'/> : <></>}
                             <img style={loaded ? {} : { display: 'none' }} className='locationCardImg' src={location.imgLink} onLoad={() => setLoaded(true)} alt={location.name} />
                             <h2 className='locationCardName'>{location.name}</h2>

@@ -18,6 +18,7 @@ import ScrollToTop from './components/ScrollToTop';
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentUserDetails, setCurrentUserDetails] = useState(null);
+  const [currentSurfLocation, setCurrentSurfLocation] = useState(null);
   const [article, setArticle] = useState();
 
   const props = {
@@ -26,7 +27,9 @@ function App() {
     currentUser,
     setCurrentUser,
     currentUserDetails,
-    setCurrentUserDetails
+    setCurrentUserDetails,
+    currentSurfLocation,
+    setCurrentSurfLocation
   }
 
   return (
