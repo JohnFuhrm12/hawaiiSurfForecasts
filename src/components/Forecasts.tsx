@@ -10,8 +10,6 @@ import { collection, query, getDocs, where } from "firebase/firestore";
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import slugify from 'slugify';
-
 firebaseInit();
 const app = firebaseInit();
 const db = getFirestore(app);
@@ -72,8 +70,7 @@ function Forecasts( {...props} ) {
                 : <></>}
                 {surfSpots.map((location:any) => {
                     function showForecastDetails() {
-                        props.setCurrentSurfLocation(location);
-                        navigate(`/forecasts/${slugify((location.id).toLowerCase())}`);
+                        navigate(`/forecasts/${location.slug}`);
                     }
 
                     return (
