@@ -23,7 +23,7 @@ function ForecastDetails( {...props} ) {
     }
 
     useEffect(() => {
-        getLocationDetails()
+        getLocationDetails();
     }, [])
 
     return (

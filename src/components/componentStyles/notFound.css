@@ -1,0 +1,24 @@
+#notFoundContainer {
+    padding-inline: 8%;
+    padding-top: 2%;
+    height: 100vh;
+    background-image: url('https://res.cloudinary.com/dvmw658s9/image/upload/v1714604031/HawaiiSurf/waqo4yizjhysv8ugfbbs.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+#notFoundTitle {
+    font-size: 40px;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.notFoundSubTitle {
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.notFoundLink {
+    color: rgb(23, 42, 135);
+}

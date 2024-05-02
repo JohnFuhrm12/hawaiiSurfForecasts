@@ -12,6 +12,7 @@ import Favorites from './components/Favorites';
 import Article from './components/Article';
 import Signup from './components/Signup';
 import Login from './components/Login';
+import NotFound from './components/NotFound';
 
 import ScrollToTop from './components/ScrollToTop';
 
@@ -41,7 +42,7 @@ function App() {
         <Route path='/signup' element={ <Signup {...props} /> }/>
         <Route path='/login' element={ <Login {...props} /> }/>
         <Route path='/news' element={ <Article {...props} /> }/>
-        <Route path='*' element={ <Home {...props} /> }/>
+        <Route path='*' element={ <NotFound {...props} /> }/>
       </Routes>
       <ToastContainer />
     </>
