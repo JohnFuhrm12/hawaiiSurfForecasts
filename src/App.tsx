@@ -39,11 +39,12 @@ function App() {
       <Routes>
         <Route path='/' element={ <Home {...props} /> }/>
         <Route path='/forecasts' element={ <Forecasts {...props} /> }/>
-        <Route path='/surf-report' element={ <ForecastDetails {...props} /> }/>
+        <Route path='/forecasts/:id' element={ <ForecastDetails {...props} /> }/>
         <Route path='/favorites' element={ <Favorites {...props} /> }/>
         <Route path='/signup' element={ <Signup {...props} /> }/>
         <Route path='/login' element={ <Login {...props} /> }/>
         <Route path='/news' element={ <Article {...props} /> }/>
+        <Route path='*' element={ <Home {...props} /> }/>
       </Routes>
       <ToastContainer />
     </>

@@ -14,6 +14,7 @@
     "firebase": "^10.11.1",
     "leaflet": "^1.9.4",
     "leaflet-velocity": "^2.1.4",
+    "lodash": "^4.17.21",
     "react": "^18.3.0",
     "react-adsense": "^0.1.0",
     "react-dom": "^18.3.0",
@@ -23,7 +24,8 @@
     "react-router": "^6.23.0",
     "react-router-dom": "^6.23.0",
     "react-toastify": "^10.0.5",
-    "react-youtube": "^10.1.0"
+    "react-youtube": "^10.1.0",
+    "slugify": "^1.6.6"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.12",

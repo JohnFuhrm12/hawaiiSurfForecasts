@@ -38,7 +38,7 @@ function Home( {...props} ) {
           <div>
             <ReactPlayer className="liveCam" url='https://www.youtube.com/watch?v=VI8Wj5EwoRM' playing muted controls/>
             <h2 className='sectionTitle sectionTitleLeft'>Pipeline Live Cam</h2>
-            <Link className="sectionLink" to='/'>View Cams</Link>
+            <Link className="sectionLink" to='/forecasts'>View Cams</Link>
           </div>
           <div id='homeMapContainer'>
             <MapContainer center={[20.200, -157.290]} zoom={7} minZoom={3}>
