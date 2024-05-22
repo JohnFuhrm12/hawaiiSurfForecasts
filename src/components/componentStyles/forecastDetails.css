@@ -2,8 +2,10 @@
     padding-inline: 2%;
 }
 
-#forecastDetailsTopLeft {
-    width: 50vw;
+#forecastDetailsTop {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
 }
 
 #forecastDetailsMainImg {
@@ -12,4 +14,21 @@
     border-radius: 20px;
     box-shadow: 10px 5px 5px rgba(0,0,0,.34);
     object-fit: cover;
+}
+
+#surfHeightBubble {
+    background-color: lime;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 10px 5px 5px rgba(0,0,0,.34);
+    width: fit-content;
+}
+
+#surfBubbleText {
+    margin: 0;
+    font-size: 30px;
+}
+
+#locationDesc {
+    font-size: 20px;
 }
