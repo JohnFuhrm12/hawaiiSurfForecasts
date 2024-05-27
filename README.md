@@ -10,6 +10,7 @@ Can put buoys with buoy info on Leaflet map as an extra.
 https://medium.com/@surf.lazy/reading-surf-forecasts-swell-height-911970022082
 
 Investigate Fourier Transform and wave direcional spectrum graphs
+Wave Energy (m^2/Hz)
 
 1. Wind + Weather info
 2. WW3 Model + chart for wave height (transparent + color coded) 1 week
