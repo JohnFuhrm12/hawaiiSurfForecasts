@@ -20,6 +20,11 @@ function ForecastDetails( {...props} ) {
     const [wavePeriod, setWavePeriod] = useState<String>();
     const [waveDirDeg, setWaveDirDeg] = useState<Number>();
     const [waveDirStr, setWaveDirStr] = useState<String>();
+    const [waterTempC, setWaterTempC] = useState<Number>();
+    const [waterTempF, setWaterTempF] = useState<Number>();
+
+    const [swellCompMajor, setSwellCompMajor] = useState();
+    const [swellCompMinor, setSwellCompMinor] = useState();
 
     const [location, setLocation] = useState(null);
     const params = useParams();
@@ -34,10 +39,10 @@ function ForecastDetails( {...props} ) {
 
     const getNDBCData = async () => {
         const northShoreBuoy = '51201';
-        const endpoint = `https://johnfuhrm12.pythonanywhere.com/buoy/${northShoreBuoy}`;
+        const mainEndpoint = `https://johnfuhrm12.pythonanywhere.com/buoy/${northShoreBuoy}`;
 
         try {
-            await axios.get(endpoint).then((res) => {
+            await axios.get(mainEndpoint).then((res) => {
                 const NDBC_Current = res.data[1];
                 setCurrentNDBCData(NDBC_Current);
 
@@ -52,6 +57,42 @@ function ForecastDetails( {...props} ) {
 
                 setWaveDirDeg(waveDirDegrees);
                 setWaveDirStr(waveDirStr);
+
+                const currentWaterTempC = NDBC_Current.WTMP;
+                const currentWaterTempF = currentWaterTempC * (9/5) + 32;
+
+
+                setWaterTempC(NDBC_Current.WTMP);
+                setWaterTempF(currentWaterTempF);
+
+                console.log(NDBC_Current)
+            });
+        } catch(e) {
+            console.log(e);
+        }
+
+        const spectralSummaryEndpoint = `https://johnfuhrm12.pythonanywhere.com/buoy/${northShoreBuoy}/spectral`;
+
+        try {
+            await axios.get(spectralSummaryEndpoint).then((res) => {
+                const NDBC_Current = res.data[1];
+
+                const compMajor = {
+                    'wvht': NDBC_Current.SwH, 
+                    'period': NDBC_Current.SwP, 
+                    'dir': NDBC_Current.SwD,
+                }
+
+                const compMinor = {
+                    'wvht': NDBC_Current.WWH, 
+                    'period': NDBC_Current.WWP, 
+                    'dir': NDBC_Current.WWD,
+                }
+
+                setSwellCompMajor(compMajor);
+                setSwellCompMinor(compMinor);
+
+                console.log(NDBC_Current)
             });
         } catch(e) {
             console.log(e);
@@ -81,6 +122,15 @@ function ForecastDetails( {...props} ) {
             <div id='forecastDetailsSwell'>
                 <h2>Swell Info</h2>
                 <h2>{waveHeightFT} ft. @ {wavePeriod}s {waveDirStr} {waveDirDeg}°</h2>
+                <h2>Swell Components</h2>
+                {swellCompMajor ? 
+                    <>
+                    <h2>{swellCompMajor.wvht} ft. @ {swellCompMajor.period}s {swellCompMajor.dir}</h2>
+                    <h2>{swellCompMinor.wvht} ft. @ {swellCompMinor.period}s {swellCompMinor.dir}</h2>
+                    </>
+                : <></>}
+                <h2>Water Temperature</h2>
+                <h2>{waterTempF}°F</h2>
             </div>
         </div>
     )
