@@ -27,7 +27,8 @@
     "react-router-dom": "^6.23.0",
     "react-toastify": "^10.0.5",
     "react-youtube": "^10.1.0",
-    "slugify": "^1.6.6"
+    "slugify": "^1.6.6",
+    "xml-js": "^1.6.11"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.12",

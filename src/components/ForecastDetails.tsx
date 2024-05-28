@@ -11,6 +11,10 @@ import getWaveDirection from './surfUtils';
 
 import Chart from 'chart.js/auto';
 
+import { xml2js, xml2json } from 'xml-js';
+import { point } from 'leaflet';
+import { beforeAuthStateChanged } from 'firebase/auth';
+
 firebaseInit();
 const app = firebaseInit();
 const db = getFirestore(app);
@@ -30,6 +34,8 @@ function ForecastDetails( {...props} ) {
 
     const [swellEnergyData, setSwellEnergyData] = useState();
 
+    const [tidePredictions, setTidePredictions] = useState();
+
     const [location, setLocation] = useState(null);
     const params = useParams();
     const locationSlug = params.id;
@@ -43,7 +49,28 @@ function ForecastDetails( {...props} ) {
 
     const getNDBCData = async () => {
         const northShoreBuoy = '51201';
+        const northShoreTideStation = '1611400';
         const mainEndpoint = `https://johnfuhrm12.pythonanywhere.com/buoy/${northShoreBuoy}`;
+        const tidesEnpoint = `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?date=today&station=${northShoreTideStation}&product=predictions&datum=MLLW&time_zone=gmt&units=english&application=DataAPI_Sample&format=xml`;
+
+        try {
+            await axios.get(tidesEnpoint).then((res) => {
+                const noaaTidesXML = res.data;
+                const jsonData = xml2json(noaaTidesXML, { compact: false, spaces: 4 });
+                const jsonRes = JSON.parse(jsonData);
+                const predictions = jsonRes.elements[0].elements;
+                let dataArr = [];
+
+                for (let i = 0; i < predictions.length; i+=3) {
+                    dataArr.push(predictions[i]);
+                }
+
+                setTidePredictions(dataArr);
+                console.log(dataArr)
+            });
+        } catch(e) {
+            console.log(e);
+        }
 
         try {
             await axios.get(mainEndpoint).then((res) => {
@@ -67,9 +94,7 @@ function ForecastDetails( {...props} ) {
 
 
                 setWaterTempC(NDBC_Current.WTMP);
-                setWaterTempF(currentWaterTempF);
-
-                console.log(NDBC_Current)
+                setWaterTempF(currentWaterTempF.toFixed(1));
             });
         } catch(e) {
             console.log(e);
@@ -95,8 +120,6 @@ function ForecastDetails( {...props} ) {
 
                 setSwellCompMajor(compMajor);
                 setSwellCompMinor(compMinor);
-
-                console.log(NDBC_Current)
             });
         } catch(e) {
             console.log(e);
@@ -108,7 +131,6 @@ function ForecastDetails( {...props} ) {
             await axios.get(spectralRawPairsEndpoint).then((res) => {
                 const NDBC_Current = res.data;
                 setSwellEnergyData(NDBC_Current);
-                console.log(NDBC_Current)
             });
         } catch(e) {
             console.log(e);
@@ -118,28 +140,68 @@ function ForecastDetails( {...props} ) {
 
     (async function() {
         const data = swellEnergyData;
-    
-        // Find the index of the maximum spectral energy - Top 2 peaks
-        const peakIndices = data.map((point, index) => ({ index, spec: point.spec })).sort((a, b) => b.spec - a.spec).slice(0, 2);
-        const swellPeriods = peakIndices.map(peak => 1 / data[peak.index].freq);
-        console.log(swellPeriods)
-    
+
         new Chart(
             document.getElementById('swellEnergy'),
             {
                 type: 'line',
                 data: {
-                    labels: data.map(row => row.freq),
+                    labels: data.map(row => (1 / row.freq).toFixed(2)),
                     datasets: [
                         {
-                            label: 'Swell Energy (m^2/Hz) vs. Frequency (Hz)',
+                            label: 'Swell Energy (m^2/Hz) vs. Period (Seconds)',
                             data: data.map(row => row.spec)
                         }
                     ]
                 },
                 options: {
-                    responsive: true, 
-                }
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxTicksLimit: 20
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                plugins: []
+            }
+        );
+    })();
+
+    (async function() {
+        const data = tidePredictions;
+
+        new Chart(
+            document.getElementById('tideChart'),
+            {
+                type: 'line',
+                data: {
+                    labels: data.map(row => row.attributes.t),
+                    datasets: [
+                        {
+                            label: 'Tide Chart',
+                            data: data.map(row => row.attributes.v)
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxTicksLimit: 8
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                plugins: []
             }
         );
     })();
@@ -177,6 +239,7 @@ function ForecastDetails( {...props} ) {
                 <h2>{waterTempF}°F</h2>
             </div>
             <div><canvas id="swellEnergy"></canvas></div>
+            <div><canvas id="tideChart"></canvas></div>
         </div>
     )
 }
