@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react';
 
 import getWaveDirection from './surfUtils';
 
+import Chart from 'chart.js/auto';
+
 firebaseInit();
 const app = firebaseInit();
 const db = getFirestore(app);
@@ -25,6 +27,8 @@ function ForecastDetails( {...props} ) {
 
     const [swellCompMajor, setSwellCompMajor] = useState();
     const [swellCompMinor, setSwellCompMinor] = useState();
+
+    const [swellEnergyData, setSwellEnergyData] = useState();
 
     const [location, setLocation] = useState(null);
     const params = useParams();
@@ -98,7 +102,47 @@ function ForecastDetails( {...props} ) {
             console.log(e);
         }
 
+        const spectralRawPairsEndpoint = `https://johnfuhrm12.pythonanywhere.com/buoy/${northShoreBuoy}/spectral/raw/pairs`;
+
+        try {
+            await axios.get(spectralRawPairsEndpoint).then((res) => {
+                const NDBC_Current = res.data;
+                setSwellEnergyData(NDBC_Current);
+                console.log(NDBC_Current)
+            });
+        } catch(e) {
+            console.log(e);
+        }
+
     }
+
+    (async function() {
+        const data = swellEnergyData;
+    
+        // Find the index of the maximum spectral energy - Top 2 peaks
+        const peakIndices = data.map((point, index) => ({ index, spec: point.spec })).sort((a, b) => b.spec - a.spec).slice(0, 2);
+        const swellPeriods = peakIndices.map(peak => 1 / data[peak.index].freq);
+        console.log(swellPeriods)
+    
+        new Chart(
+            document.getElementById('swellEnergy'),
+            {
+                type: 'line',
+                data: {
+                    labels: data.map(row => row.freq),
+                    datasets: [
+                        {
+                            label: 'Swell Energy (m^2/Hz) vs. Frequency (Hz)',
+                            data: data.map(row => row.spec)
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, 
+                }
+            }
+        );
+    })();
 
     useEffect(() => {
         getLocationDetails();
@@ -114,7 +158,7 @@ function ForecastDetails( {...props} ) {
                 </div>
                 <div id='forecastDetailsTopRight'>
                     <div id='surfHeightBubble'>
-                        <h2 id='surfBubbleText'>4-5 ft. - Fair</h2>
+                        <h2 id='surfBubbleText'>{Math.floor(waveHeightFT)}-{Math.ceil(waveHeightFT)} ft. - Fair</h2>
                     </div>
                     <p id='locationDesc'>The Banzai Pipeline is a reef break located in Hawaii, off Ehukai Beach Park in Pupukea on O'ahu's North Shore. Pipeline is known for huge waves that break in shallow water just above a sharp and cavernous reef, forming large, hollow, thick curls of water that surfers can tube ride. There are three reefs at Pipeline in progressively deeper water that activate according to the increasing size of swell.</p>
                 </div>
@@ -132,6 +176,7 @@ function ForecastDetails( {...props} ) {
                 <h2>Water Temperature</h2>
                 <h2>{waterTempF}°F</h2>
             </div>
+            <div><canvas id="swellEnergy"></canvas></div>
         </div>
     )
 }
