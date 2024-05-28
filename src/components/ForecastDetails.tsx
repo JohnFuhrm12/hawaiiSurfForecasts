@@ -138,6 +138,28 @@ function ForecastDetails( {...props} ) {
 
     }
 
+    const verticalHover = {
+        id: 'verticalHoverLine',
+        afterDraw: function(chart) {
+            if (chart.tooltip._active && chart.tooltip._active.length) {
+                const { ctx, tooltip } = chart;
+                const activePoint = chart.tooltip._active[0];
+                const x = activePoint.element.x;
+    
+                ctx.save();
+    
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgb(0, 136, 255)';
+                ctx.lineWidth = 2;
+                ctx.moveTo(x, chart.chartArea.top);
+                ctx.lineTo(x, chart.chartArea.bottom);
+                ctx.stroke();
+    
+                ctx.restore();
+            }
+        }
+    };
+
     (async function() {
         const data = swellEnergyData;
 
@@ -150,7 +172,7 @@ function ForecastDetails( {...props} ) {
                     datasets: [
                         {
                             label: 'Swell Energy (m^2/Hz) vs. Period (Seconds)',
-                            data: data.map(row => row.spec)
+                            data: data.map(row => row.spec.toFixed(2))
                         }
                     ]
                 },
@@ -167,7 +189,7 @@ function ForecastDetails( {...props} ) {
                         intersect: false
                     }
                 },
-                plugins: []
+                plugins: [verticalHover]
             }
         );
     })();
@@ -184,7 +206,7 @@ function ForecastDetails( {...props} ) {
                     datasets: [
                         {
                             label: 'Tide Chart',
-                            data: data.map(row => row.attributes.v)
+                            data: data.map(row => Number(row.attributes.v).toFixed(2))
                         }
                     ]
                 },
@@ -201,7 +223,7 @@ function ForecastDetails( {...props} ) {
                         intersect: false
                     }
                 },
-                plugins: []
+                plugins: [verticalHover]
             }
         );
     })();
