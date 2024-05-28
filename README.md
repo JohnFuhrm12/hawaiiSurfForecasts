@@ -13,7 +13,7 @@ Investigate Fourier Transform and wave direcional spectrum graphs
 Wave Energy (m^2/Hz)
 
 1. Wind + Weather info
-2. WW3 Model + chart for wave height (transparent + color coded) 1 week https://ftpprd.ncep.noaa.gov/data/nccf/com/gfs/prod/
+2. WW3 Model + chart for wave height (transparent + color coded) 1 week https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/gfs.20240527/00/wave/station/bulls.t00z/gfswave.51201.bull
 3. Tide info + chart
 4. Wave direction spectral chart
    
