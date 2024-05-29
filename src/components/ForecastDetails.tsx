@@ -36,6 +36,8 @@ function ForecastDetails( {...props} ) {
 
     const [tidePredictions, setTidePredictions] = useState();
 
+    const [waveForecastData, setWaveForecastData] = useState();
+
     const [location, setLocation] = useState(null);
     const params = useParams();
     const locationSlug = params.id;
@@ -50,8 +52,11 @@ function ForecastDetails( {...props} ) {
     const getNDBCData = async () => {
         const northShoreBuoy = '51201';
         const northShoreTideStation = '1611400';
-        const mainEndpoint = `https://johnfuhrm12.pythonanywhere.com/buoy/${northShoreBuoy}`;
-        const tidesEnpoint = `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?date=today&station=${northShoreTideStation}&product=predictions&datum=MLLW&time_zone=gmt&units=english&application=DataAPI_Sample&format=xml`;
+        const buoyID = northShoreBuoy;
+        const tideStationID = northShoreTideStation;
+        const flaskAPIBase = 'https://johnfuhrm12.pythonanywhere.com';
+        const mainEndpoint = `${flaskAPIBase}/buoy/${northShoreBuoy}`;
+        const tidesEnpoint = `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?date=today&station=${tideStationID}&product=predictions&datum=MLLW&time_zone=gmt&units=english&application=DataAPI_Sample&format=xml`;
 
         try {
             await axios.get(tidesEnpoint).then((res) => {
@@ -66,7 +71,6 @@ function ForecastDetails( {...props} ) {
                 }
 
                 setTidePredictions(dataArr);
-                console.log(dataArr)
             });
         } catch(e) {
             console.log(e);
@@ -100,7 +104,7 @@ function ForecastDetails( {...props} ) {
             console.log(e);
         }
 
-        const spectralSummaryEndpoint = `https://johnfuhrm12.pythonanywhere.com/buoy/${northShoreBuoy}/spectral`;
+        const spectralSummaryEndpoint = `${flaskAPIBase}/buoy/${buoyID}/spectral`;
 
         try {
             await axios.get(spectralSummaryEndpoint).then((res) => {
@@ -125,12 +129,24 @@ function ForecastDetails( {...props} ) {
             console.log(e);
         }
 
-        const spectralRawPairsEndpoint = `https://johnfuhrm12.pythonanywhere.com/buoy/${northShoreBuoy}/spectral/raw/pairs`;
+        const spectralRawPairsEndpoint = `${flaskAPIBase}/buoy/${buoyID}/spectral/raw/pairs`;
 
         try {
             await axios.get(spectralRawPairsEndpoint).then((res) => {
                 const NDBC_Current = res.data;
                 setSwellEnergyData(NDBC_Current);
+            });
+        } catch(e) {
+            console.log(e);
+        }
+
+        const waveWatcher3Endpoint = `${flaskAPIBase}/ww3/buoy/${buoyID}`;
+
+        try {
+            await axios.get(waveWatcher3Endpoint).then((res) => {
+                const GFS_Current = res.data;
+                console.log(GFS_Current);
+                setWaveForecastData(GFS_Current);
             });
         } catch(e) {
             console.log(e);
@@ -149,7 +165,7 @@ function ForecastDetails( {...props} ) {
                 ctx.save();
     
                 ctx.beginPath();
-                ctx.strokeStyle = 'rgb(0, 136, 255)';
+                ctx.strokeStyle = 'rgb(0, 166, 255)';
                 ctx.lineWidth = 2;
                 ctx.moveTo(x, chart.chartArea.top);
                 ctx.lineTo(x, chart.chartArea.bottom);
@@ -206,7 +222,12 @@ function ForecastDetails( {...props} ) {
                     datasets: [
                         {
                             label: 'Tide Chart',
-                            data: data.map(row => Number(row.attributes.v).toFixed(2))
+                            data: data.map(row => Number(row.attributes.v).toFixed(2)),
+                            fill: true,
+                            backgroundColor: 'rgb(0, 166, 255)',
+                            pointRadius: 3,
+                            pointHoverBackgroundColor: 'red',
+                            pointHoverRadius: 6
                         }
                     ]
                 },
@@ -215,6 +236,40 @@ function ForecastDetails( {...props} ) {
                         x: {
                             ticks: {
                                 maxTicksLimit: 8
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                plugins: [verticalHover]
+            }
+        );
+    })();
+
+    (async function() {
+        const data = waveForecastData;
+
+        new Chart(
+            document.getElementById('forecastChart'),
+            {
+                type: 'line',
+                data: {
+                    labels: data.map(row => row.day),
+                    datasets: [
+                        {
+                            label: 'Forecasted Wave Height - NOAA WW3 Model',
+                            data: data.map(row => (row.sWVHT * 3.281).toFixed(2))
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxTicksLimit: 20
                             }
                         }
                     },
@@ -262,6 +317,7 @@ function ForecastDetails( {...props} ) {
             </div>
             <div><canvas id="swellEnergy"></canvas></div>
             <div><canvas id="tideChart"></canvas></div>
+            <div><canvas id="forecastChart"></canvas></div>
         </div>
     )
 }
