@@ -22,3 +22,5 @@ Wave Energy (m^2/Hz)
 https://polar.ncep.noaa.gov/waves/WEB/multi_1.latest_run/plots/multi_1.51201.bull
 
 https://www.weather.gov/documentation/services-web-api
+
+https://ftpprd.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.20240530/00/wave/station/bulls.t00z/gfswave.51201.bull
