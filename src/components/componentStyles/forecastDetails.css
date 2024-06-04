@@ -32,3 +32,40 @@
 #locationDesc {
     font-size: 20px;
 }
+
+.forecastInfoTitle {
+    font-size: 28px;
+}
+
+.forecastInfoSubtitle {
+    font-size: 24px;
+    font-style: italic;
+}
+
+.forecastInfoComp {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.forecastInfoChartContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 15px;
+    height: 320px;
+}
+
+.forecastInfoContainer {
+    width: 50%;
+}
+
+.forecastChartContainer {
+    width: 50%;
+}
+
+#ww3ForeacastChartContainer {
+    margin-top: 100px;
+    margin-bottom: 60px;
+}

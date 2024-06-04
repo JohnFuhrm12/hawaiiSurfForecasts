@@ -49,9 +49,19 @@ function ForecastDetails( {...props} ) {
         setLocation(validLocations[0]);
     }
 
+    function getCurrentDate() {
+        let today = new Date();
+        let year = today.getFullYear();
+        let month = (today.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 because January is 0
+        let day = today.getDate().toString().padStart(2, '0');
+        return `${year}${month}${day}`;
+    }
+
     const getNDBCData = async () => {
         const northShoreBuoy = '51201';
         const northShoreTideStation = '1611400';
+        const modelDate = getCurrentDate(); // yyyymmdd
+        console.log(getCurrentDate())
         const buoyID = northShoreBuoy;
         const tideStationID = northShoreTideStation;
         const flaskAPIBase = 'https://johnfuhrm12.pythonanywhere.com';
@@ -140,7 +150,7 @@ function ForecastDetails( {...props} ) {
             console.log(e);
         }
 
-        const waveWatcher3Endpoint = `${flaskAPIBase}/ww3/buoy/${buoyID}`;
+        const waveWatcher3Endpoint = `${flaskAPIBase}/ww3/${modelDate}/buoy/${buoyID}`;
 
         try {
             await axios.get(waveWatcher3Endpoint).then((res) => {
@@ -196,7 +206,7 @@ function ForecastDetails( {...props} ) {
                     scales: {
                         x: {
                             ticks: {
-                                maxTicksLimit: 20
+                                maxTicksLimit: 10
                             }
                         }
                     },
@@ -212,21 +222,22 @@ function ForecastDetails( {...props} ) {
 
     (async function() {
         const data = tidePredictions;
+        console.log(tidePredictions)
 
         new Chart(
             document.getElementById('tideChart'),
             {
                 type: 'line',
                 data: {
-                    labels: data.map(row => row.attributes.t),
+                    labels: data.map(row => new Date(row.attributes.t).getHours()),
                     datasets: [
                         {
                             label: 'Tide Chart',
                             data: data.map(row => Number(row.attributes.v).toFixed(2)),
-                            fill: true,
-                            backgroundColor: 'rgb(0, 166, 255)',
+                            fill: 'start',
+                            backgroundColor: 'rgba(0, 123, 255, 0.555)',
                             pointRadius: 3,
-                            pointHoverBackgroundColor: 'red',
+                            pointHoverBackgroundColor: 'lime',
                             pointHoverRadius: 6
                         }
                     ]
@@ -237,6 +248,9 @@ function ForecastDetails( {...props} ) {
                             ticks: {
                                 maxTicksLimit: 8
                             }
+                        }, 
+                        y: {
+                            beginAtZero: true
                         }
                     },
                     interaction: {
@@ -260,7 +274,7 @@ function ForecastDetails( {...props} ) {
                     labels: data.map(row => row.day),
                     datasets: [
                         {
-                            label: 'Forecasted Wave Height - NOAA WW3 Model',
+                            label: 'Forecasted Wave Height Ft. - NOAA WW3 Model',
                             data: data.map(row => (row.sWVHT * 3.281).toFixed(2))
                         }
                     ]
@@ -271,6 +285,9 @@ function ForecastDetails( {...props} ) {
                             ticks: {
                                 maxTicksLimit: 20
                             }
+                        },
+                        y: {
+                            beginAtZero: false
                         }
                     },
                     interaction: {
@@ -303,21 +320,36 @@ function ForecastDetails( {...props} ) {
                 </div>
             </div>
             <div id='forecastDetailsSwell'>
-                <h2>Swell Info</h2>
-                <h2>{waveHeightFT} ft. @ {wavePeriod}s {waveDirStr} {waveDirDeg}°</h2>
-                <h2>Swell Components</h2>
-                {swellCompMajor ? 
-                    <>
-                    <h2>{swellCompMajor.wvht} ft. @ {swellCompMajor.period}s {swellCompMajor.dir}</h2>
-                    <h2>{swellCompMinor.wvht} ft. @ {swellCompMinor.period}s {swellCompMinor.dir}</h2>
-                    </>
-                : <></>}
-                <h2>Water Temperature</h2>
-                <h2>{waterTempF}°F</h2>
+                <div className='forecastInfoChartContainer'>
+                    <div className='forecastInfoContainer'>
+                        <h2 className='forecastInfoTitle'>Waves and Swell</h2>
+                        <p className='forecastInfoComp'>{waveHeightFT} ft. @ {wavePeriod}s {waveDirStr} {waveDirDeg}°</p>
+                        <h2 className='forecastInfoSubtitle'>Swell Components</h2>
+                        {swellCompMajor ? 
+                            <>
+                            <p className='forecastInfoComp'>{swellCompMajor.wvht} ft. @ {swellCompMajor.period}s {swellCompMajor.dir}</p>
+                            <p className='forecastInfoComp'>{swellCompMinor.wvht} ft. @ {swellCompMinor.period}s {swellCompMinor.dir}</p>
+                            </>
+                        : <></>}
+                    </div>
+                    <div className='forecastChartContainer'>
+                        <canvas id="swellEnergy"></canvas>
+                    </div>
+                </div>
+                <div className='forecastInfoChartContainer'>
+                    <div className='forecastInfoContainer'>
+                        <h2 className='forecastInfoTitle'>Weather</h2>
+                        <h2 className='forecastInfoSubtitle'>Water Temperature</h2>
+                        <p className='forecastInfoComp'>{waterTempF}°F</p> 
+                    </div>
+                    <div className='forecastChartContainer'>
+                        <canvas id="tideChart"></canvas>
+                    </div>
+                </div>
             </div>
-            <div><canvas id="swellEnergy"></canvas></div>
-            <div><canvas id="tideChart"></canvas></div>
-            <div><canvas id="forecastChart"></canvas></div>
+            <div id='ww3ForeacastChartContainer'>
+                <canvas id="forecastChart"></canvas>
+            </div>
         </div>
     )
 }
