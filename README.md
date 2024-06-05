@@ -1,26 +1,27 @@
 # Hawaii Surf Forecasts
 
-Surf forecast site for Hawaiian Islands. Built with React/TypeScript and using my Flask API to get raw NOAA buoy data.
+Surf forecast site for Hawaiian Islands. Built with React/TypeScript and using my Flask API (NDBC Buoy Data) to get raw NOAA buoy data.
 
-Need to access NOAA Wave Watcher 3 model data for future forecasts.
-Need to split raw buoy data and solve for wave height as a function of frequency and power to get individual swell components.
+# Features
+1. Home page with Pipeline surf camera, regional wind map, and local surf news
+2. Interacive surf map and dashboard with best surfing beaches to choose from
+3. Detailed surf forecast with local swell and weather information
+4. Interacive charts for swell energy, tides, and 2 week surf forecasts
+5. Secure sign up and login with Firebase Auth
+6. Favorites page to quickly add and access chosen surf spots
 
-Can put buoys with buoy info on Leaflet map as an extra.
+# API & Data Information
 
-https://medium.com/@surf.lazy/reading-surf-forecasts-swell-height-911970022082
+The site pulls data from various different sources to get a full picture view of the current surf conditions. The primary source is NOAA - Primarily from NDBC buoys.
 
-Investigate Fourier Transform and wave direcional spectrum graphs
-Wave Energy (m^2/Hz)
+The NDBC Buoy Data Flask API facilitates NOAA CSV and .Bull document parsing, giving current buoy datasets, raw spectral data providing the swell energy and frequency of different swell groups, and Wave Watcher 3 forecast data from NOAAs GFS model providing future swell predictions.
 
-1. Wind + Weather info
-2. WW3 Model + chart for wave height (transparent + color coded) 1 week https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/gfs.20240527/00/wave/station/bulls.t00z/gfswave.51201.bull
-3. Tide info + chart
-4. Wave direction spectral chart
-   
+This information provides the site with swell energy, frequency, period, significant wave heights and direction, and more. 
 
+Tidal data is drawn from NOAA tidal stations from their Tides And Currents API.
 
-https://polar.ncep.noaa.gov/waves/WEB/multi_1.latest_run/plots/multi_1.51201.bull
+Local weather conditions, temperatures, and wind for beaches are drawn from the OpenWeather API using beach coordinates.
 
-https://www.weather.gov/documentation/services-web-api
+Local Hawaii news articles are fetcheed from the News API.
 
-https://ftpprd.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.20240530/00/wave/station/bulls.t00z/gfswave.51201.bull
+Spot information to use for each API call is stored in a Firebase database.
