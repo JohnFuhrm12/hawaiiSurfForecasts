@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => {
     define: {
       'process.env.REACT_APP_NEWS_API_KEY': JSON.stringify(env.REACT_APP_NEWS_API_KEY),
       'process.env.REACT_APP_FIREBASE_API_KEY': JSON.stringify(env.REACT_APP_FIREBASE_API_KEY),
+      'process.env.REACT_APP_OPEN_WEATHER_API_KEY': JSON.stringify(env.REACT_APP_OPEN_WEATHER_API_KEY)
     },
     plugins: [react()],
   }

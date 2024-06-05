@@ -7,6 +7,7 @@ import { getFirestore } from "firebase/firestore";
 import { collection, query, getDocs, where } from "firebase/firestore";
 import { getWaveDirection } from '../utils/surfUtils';
 import { createSwellEnergyChart, createTideChart, createWaveForecastChart } from '../utils/chartUtils';
+import ReactPlayer from 'react-player/lazy';
 import './componentStyles/forecastDetails.css';
 
 firebaseInit();
@@ -27,13 +28,13 @@ function ForecastDetails( {...props} ) {
     const [swellCompMinor, setSwellCompMinor] = useState();
 
     const [swellEnergyData, setSwellEnergyData] = useState();
-
     const [tidePredictions, setTidePredictions] = useState();
-
     const [waveForecastData, setWaveForecastData] = useState();
 
     const [buoy, setBuoy] = useState<String>();
     const [tideStation, setTideStation] = useState<String>();
+
+    const [localWeather, setLocalWeather] = useState();
 
     const [location, setLocation] = useState(null);
     const params = useParams();
@@ -46,6 +47,23 @@ function ForecastDetails( {...props} ) {
         setLocation(validLocations[0]);
         setTideStation(validLocations[0].tideStation);
         setBuoy(validLocations[0].buoy);
+    }
+
+    const getLocalWeather = async () => {
+        const openWeatherKey = process.env.REACT_APP_OPEN_WEATHER_API_KEY;
+        const lat = location.coordinates[0];
+        const lon = location.coordinates[1];
+
+        const endpoint = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherKey}`;
+
+        try {
+            await axios.get(endpoint).then((res) => {
+                const weather = res.data;
+                setLocalWeather(weather)
+            })
+        } catch(e) {
+            console.error(e);
+        }
     }
 
     function getCurrentDate() {
@@ -160,8 +178,6 @@ function ForecastDetails( {...props} ) {
         const waveWatcher3Endpoint = `${flaskAPIBase}/ww3/${modelDate}/buoy/${buoy}`;
         const waveWatcher3BackupEndpoint = `${flaskAPIBase}/ww3/${modelYDate}/buoy/${buoy}`;
 
-        console.log(waveWatcher3Endpoint)
-
         try {
             await axios.get(waveWatcher3Endpoint).then((res) => {
                 const GFS_Current = res.data;
@@ -194,6 +210,10 @@ function ForecastDetails( {...props} ) {
     }, [buoy])
 
     useEffect(() => {
+        getLocalWeather();
+    }, [location])
+
+    useEffect(() => {
         getLocationDetails();
     }, [])
 
@@ -201,9 +221,15 @@ function ForecastDetails( {...props} ) {
         <div id='forecastDetailsContainer'>
             <h1 id='forecastDetailsTitle'>{location?.name} Surf Report</h1>
             <div id='forecastDetailsTop'>
+                {location?.hasCam ? 
+                <div id='forecastDetailsTopLeft'>
+                    <ReactPlayer className="liveCam" url={location.camLink} playing muted controls/> 
+                </div>
+                : 
                 <div id='forecastDetailsTopLeft'>
                     <img id='forecastDetailsMainImg' src={location?.imgLink} alt={location?.name} />
                 </div>
+                }
                 <div id='forecastDetailsTopRight'>
                     <div id='surfHeightBubble'>
                         <h2 id='surfBubbleText'>{Math.floor(waveHeightFT)}-{Math.ceil(waveHeightFT)} ft. - Fair</h2>
@@ -231,6 +257,10 @@ function ForecastDetails( {...props} ) {
                 <div className='forecastInfoChartContainer'>
                     <div className='forecastInfoContainer'>
                         <h2 className='forecastInfoTitle'>Weather</h2>
+                        <h2 className='forecastInfoSubtitle'>Local Wind</h2>
+                        <p className='forecastInfoComp'>{localWeather?.wind.speed} mph {getWaveDirection(localWeather?.wind.deg)} {localWeather?.wind.deg}°</p> 
+                        <h2 className='forecastInfoSubtitle'>Air Temperature</h2>
+                        <p className='forecastInfoComp'>{(((localWeather?.main.temp * 9) / 5) - 459.67).toFixed(1)}°F</p> 
                         <h2 className='forecastInfoSubtitle'>Water Temperature</h2>
                         <p className='forecastInfoComp'>{waterTempF}°F</p> 
                     </div>
