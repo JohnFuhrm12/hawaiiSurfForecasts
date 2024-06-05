@@ -1,19 +1,13 @@
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { xml2json } from 'xml-js';
 import axios from 'axios';
-import './componentStyles/forecastDetails.css';
-
 import firebaseInit from './firebaseConfig';
 import { getFirestore } from "firebase/firestore";
 import { collection, query, getDocs, where } from "firebase/firestore";
-import { useEffect, useState } from 'react';
-
-import getWaveDirection from './surfUtils';
-
-import Chart from 'chart.js/auto';
-
-import { xml2js, xml2json } from 'xml-js';
-import { point } from 'leaflet';
-import { beforeAuthStateChanged } from 'firebase/auth';
+import { getWaveDirection } from '../utils/surfUtils';
+import { createSwellEnergyChart, createTideChart, createWaveForecastChart } from '../utils/chartUtils';
+import './componentStyles/forecastDetails.css';
 
 firebaseInit();
 const app = firebaseInit();
@@ -164,141 +158,11 @@ function ForecastDetails( {...props} ) {
 
     }
 
-    const verticalHover = {
-        id: 'verticalHoverLine',
-        afterDraw: function(chart) {
-            if (chart.tooltip._active && chart.tooltip._active.length) {
-                const { ctx, tooltip } = chart;
-                const activePoint = chart.tooltip._active[0];
-                const x = activePoint.element.x;
-    
-                ctx.save();
-    
-                ctx.beginPath();
-                ctx.strokeStyle = 'rgb(0, 166, 255)';
-                ctx.lineWidth = 2;
-                ctx.moveTo(x, chart.chartArea.top);
-                ctx.lineTo(x, chart.chartArea.bottom);
-                ctx.stroke();
-    
-                ctx.restore();
-            }
-        }
-    };
-
-    (async function() {
-        const data = swellEnergyData;
-
-        new Chart(
-            document.getElementById('swellEnergy'),
-            {
-                type: 'line',
-                data: {
-                    labels: data.map(row => (1 / row.freq).toFixed(2)),
-                    datasets: [
-                        {
-                            label: 'Swell Energy (m^2/Hz) vs. Period (Seconds)',
-                            data: data.map(row => row.spec.toFixed(2))
-                        }
-                    ]
-                },
-                options: {
-                    scales: {
-                        x: {
-                            ticks: {
-                                maxTicksLimit: 10
-                            }
-                        }
-                    },
-                    interaction: {
-                        mode: 'index',
-                        intersect: false
-                    }
-                },
-                plugins: [verticalHover]
-            }
-        );
-    })();
-
-    (async function() {
-        const data = tidePredictions;
-        console.log(tidePredictions)
-
-        new Chart(
-            document.getElementById('tideChart'),
-            {
-                type: 'line',
-                data: {
-                    labels: data.map(row => new Date(row.attributes.t).getHours()),
-                    datasets: [
-                        {
-                            label: 'Tide Chart',
-                            data: data.map(row => Number(row.attributes.v).toFixed(2)),
-                            fill: 'start',
-                            backgroundColor: 'rgba(0, 123, 255, 0.555)',
-                            pointRadius: 3,
-                            pointHoverBackgroundColor: 'lime',
-                            pointHoverRadius: 6
-                        }
-                    ]
-                },
-                options: {
-                    scales: {
-                        x: {
-                            ticks: {
-                                maxTicksLimit: 8
-                            }
-                        }, 
-                        y: {
-                            beginAtZero: true
-                        }
-                    },
-                    interaction: {
-                        mode: 'index',
-                        intersect: false
-                    }
-                },
-                plugins: [verticalHover]
-            }
-        );
-    })();
-
-    (async function() {
-        const data = waveForecastData;
-
-        new Chart(
-            document.getElementById('forecastChart'),
-            {
-                type: 'line',
-                data: {
-                    labels: data.map(row => row.day),
-                    datasets: [
-                        {
-                            label: 'Forecasted Wave Height Ft. - NOAA WW3 Model',
-                            data: data.map(row => (row.sWVHT * 3.281).toFixed(2))
-                        }
-                    ]
-                },
-                options: {
-                    scales: {
-                        x: {
-                            ticks: {
-                                maxTicksLimit: 20
-                            }
-                        },
-                        y: {
-                            beginAtZero: false
-                        }
-                    },
-                    interaction: {
-                        mode: 'index',
-                        intersect: false
-                    }
-                },
-                plugins: [verticalHover]
-            }
-        );
-    })();
+    useEffect(() => {
+        createSwellEnergyChart(swellEnergyData);
+        createTideChart(tidePredictions);
+        createWaveForecastChart(waveForecastData);
+    }, [swellEnergyData, tidePredictions, waveForecastData])
 
     useEffect(() => {
         getLocationDetails();

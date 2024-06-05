@@ -1,4 +1,5 @@
-function getWaveDirection(deg:number) {
+// Get wave direction as text from degrees
+export function getWaveDirection(deg:number) {
     if (deg === 0) {
         return 'N';
     } else if (deg > 0 && deg < 45) {
@@ -33,5 +34,3 @@ function getWaveDirection(deg:number) {
         return 'NNW';
     }
 }
-
-export default getWaveDirection;
