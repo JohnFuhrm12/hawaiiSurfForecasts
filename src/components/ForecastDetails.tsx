@@ -160,6 +160,8 @@ function ForecastDetails( {...props} ) {
         const waveWatcher3Endpoint = `${flaskAPIBase}/ww3/${modelDate}/buoy/${buoy}`;
         const waveWatcher3BackupEndpoint = `${flaskAPIBase}/ww3/${modelYDate}/buoy/${buoy}`;
 
+        console.log(waveWatcher3Endpoint)
+
         try {
             await axios.get(waveWatcher3Endpoint).then((res) => {
                 const GFS_Current = res.data;
@@ -206,13 +208,13 @@ function ForecastDetails( {...props} ) {
                     <div id='surfHeightBubble'>
                         <h2 id='surfBubbleText'>{Math.floor(waveHeightFT)}-{Math.ceil(waveHeightFT)} ft. - Fair</h2>
                     </div>
-                    <p id='locationDesc'>The Banzai Pipeline is a reef break located in Hawaii, off Ehukai Beach Park in Pupukea on O'ahu's North Shore. Pipeline is known for huge waves that break in shallow water just above a sharp and cavernous reef, forming large, hollow, thick curls of water that surfers can tube ride. There are three reefs at Pipeline in progressively deeper water that activate according to the increasing size of swell.</p>
+                    <p id='locationDesc'>{location?.desc}</p>
                 </div>
             </div>
             <div id='forecastDetailsSwell'>
                 <div className='forecastInfoChartContainer'>
                     <div className='forecastInfoContainer'>
-                        <h2 className='forecastInfoTitle'>Waves and Swell ({buoy})</h2>
+                        <h2 className='forecastInfoTitle'>Waves and Swell - {buoy}</h2>
                         <p className='forecastInfoComp'>{waveHeightFT} ft. @ {wavePeriod}s {waveDirStr} {waveDirDeg}°</p>
                         <h2 className='forecastInfoSubtitle'>Swell Components</h2>
                         {swellCompMajor ? 
