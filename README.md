@@ -1,12 +1,12 @@
 # Hawaii Surf Forecasts
 
-Surf forecast site for Hawaiian Islands. Built with React/TypeScript and using my Flask API (NDBC Buoy Data) to get raw NOAA buoy data.
+Surf forecast site for the Hawaiian Islands. Built with React/TypeScript and using my Flask API (NDBC Buoy Data) to get raw NOAA buoy data.
 
 # Features
 1. Home page with Pipeline surf camera, regional wind map, and local surf news
-2. Interacive surf map and dashboard with best surfing beaches to choose from
+2. Interactive surf map and dashboard with best surfing beaches to choose from
 3. Detailed surf forecast with local swell and weather information
-4. Interacive charts for swell energy, tides, and 2 week surf forecasts
+4. Interactive charts for swell energy, tides, and 2 week surf forecasts
 5. Secure sign up and login with Firebase Auth
 6. Favorites page to quickly add and access chosen surf spots
 
