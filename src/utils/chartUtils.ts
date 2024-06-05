@@ -73,6 +73,8 @@ export const createTideChart = async (tidePredictions:any, tideStation:string) =
 
         let max = 0;
         let min = 0;
+        let maxFound = false;
+        let minFound = false;
 
         data.forEach((point) => {
             if (Number(point.attributes.v) > max) {
@@ -88,9 +90,13 @@ export const createTideChart = async (tidePredictions:any, tideStation:string) =
             let index = context.dataIndex;
             let value = context.dataset.data[ index ];
 
-            if (value == max || value == min) {
+            if (value == max) {
                 size = 4;
             } 
+
+            if (value == min) {
+                size = 4;
+            }
 
             return size;
         }

@@ -46,8 +46,6 @@ function ForecastDetails( {...props} ) {
         setLocation(validLocations[0]);
         setTideStation(validLocations[0].tideStation);
         setBuoy(validLocations[0].buoy);
-        console.log(buoy)
-        console.log(tideStation)
     }
 
     function getCurrentDate() {
@@ -165,7 +163,6 @@ function ForecastDetails( {...props} ) {
         try {
             await axios.get(waveWatcher3Endpoint).then((res) => {
                 const GFS_Current = res.data;
-                console.log(GFS_Current);
                 setWaveForecastData(GFS_Current);
             });
         } catch(e) {
@@ -175,7 +172,6 @@ function ForecastDetails( {...props} ) {
             try {
                 await axios.get(waveWatcher3BackupEndpoint).then((res) => {
                     const GFS_Current = res.data;
-                    console.log(GFS_Current);
                     setWaveForecastData(GFS_Current);
                 });
             } catch(e) {
