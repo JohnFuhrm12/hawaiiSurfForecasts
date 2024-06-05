@@ -32,6 +32,9 @@ function ForecastDetails( {...props} ) {
 
     const [waveForecastData, setWaveForecastData] = useState();
 
+    const [buoy, setBuoy] = useState<String>();
+    const [tideStation, setTideStation] = useState<String>();
+
     const [location, setLocation] = useState(null);
     const params = useParams();
     const locationSlug = params.id;
@@ -41,6 +44,10 @@ function ForecastDetails( {...props} ) {
         const locationQuerySnapshot = await getDocs(locationRef);
         const validLocations = locationQuerySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id}));
         setLocation(validLocations[0]);
+        setTideStation(validLocations[0].tideStation);
+        setBuoy(validLocations[0].buoy);
+        console.log(buoy)
+        console.log(tideStation)
     }
 
     function getCurrentDate() {
@@ -51,16 +58,24 @@ function ForecastDetails( {...props} ) {
         return `${year}${month}${day}`;
     }
 
+    function getYesterdayDate() {
+        let today = new Date();
+        let yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+    
+        let year = yesterday.getFullYear();
+        let month = (yesterday.getMonth() + 1).toString().padStart(2, '0');
+        let day = yesterday.getDate().toString().padStart(2, '0');
+    
+        return `${year}${month}${day}`;
+    }
+
     const getNDBCData = async () => {
-        const northShoreBuoy = '51201';
-        const northShoreTideStation = '1611400';
         const modelDate = getCurrentDate(); // yyyymmdd
-        console.log(getCurrentDate())
-        const buoyID = northShoreBuoy;
-        const tideStationID = northShoreTideStation;
+        const modelYDate = getYesterdayDate();
         const flaskAPIBase = 'https://johnfuhrm12.pythonanywhere.com';
-        const mainEndpoint = `${flaskAPIBase}/buoy/${northShoreBuoy}`;
-        const tidesEnpoint = `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?date=today&station=${tideStationID}&product=predictions&datum=MLLW&time_zone=gmt&units=english&application=DataAPI_Sample&format=xml`;
+        const mainEndpoint = `${flaskAPIBase}/buoy/${buoy}`;
+        const tidesEnpoint = `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?date=today&station=${tideStation}&product=predictions&datum=MLLW&time_zone=gmt&units=english&application=DataAPI_Sample&format=xml`;
 
         try {
             await axios.get(tidesEnpoint).then((res) => {
@@ -77,7 +92,7 @@ function ForecastDetails( {...props} ) {
                 setTidePredictions(dataArr);
             });
         } catch(e) {
-            console.log(e);
+            console.error(e);
         }
 
         try {
@@ -105,10 +120,10 @@ function ForecastDetails( {...props} ) {
                 setWaterTempF(currentWaterTempF.toFixed(1));
             });
         } catch(e) {
-            console.log(e);
+            console.error(e);
         }
 
-        const spectralSummaryEndpoint = `${flaskAPIBase}/buoy/${buoyID}/spectral`;
+        const spectralSummaryEndpoint = `${flaskAPIBase}/buoy/${buoy}/spectral`;
 
         try {
             await axios.get(spectralSummaryEndpoint).then((res) => {
@@ -130,10 +145,10 @@ function ForecastDetails( {...props} ) {
                 setSwellCompMinor(compMinor);
             });
         } catch(e) {
-            console.log(e);
+            console.error(e);
         }
 
-        const spectralRawPairsEndpoint = `${flaskAPIBase}/buoy/${buoyID}/spectral/raw/pairs`;
+        const spectralRawPairsEndpoint = `${flaskAPIBase}/buoy/${buoy}/spectral/raw/pairs`;
 
         try {
             await axios.get(spectralRawPairsEndpoint).then((res) => {
@@ -144,7 +159,8 @@ function ForecastDetails( {...props} ) {
             console.log(e);
         }
 
-        const waveWatcher3Endpoint = `${flaskAPIBase}/ww3/${modelDate}/buoy/${buoyID}`;
+        const waveWatcher3Endpoint = `${flaskAPIBase}/ww3/${modelDate}/buoy/${buoy}`;
+        const waveWatcher3BackupEndpoint = `${flaskAPIBase}/ww3/${modelYDate}/buoy/${buoy}`;
 
         try {
             await axios.get(waveWatcher3Endpoint).then((res) => {
@@ -153,20 +169,34 @@ function ForecastDetails( {...props} ) {
                 setWaveForecastData(GFS_Current);
             });
         } catch(e) {
-            console.log(e);
+            console.error(e);
+            console.error('Failed to get model run from today, attempting to fetch yesterdays.')
+            // If the run fails, possibly because it has not yet been created, get the previous run
+            try {
+                await axios.get(waveWatcher3BackupEndpoint).then((res) => {
+                    const GFS_Current = res.data;
+                    console.log(GFS_Current);
+                    setWaveForecastData(GFS_Current);
+                });
+            } catch(e) {
+                console.error(e)
+            }
         }
 
     }
 
     useEffect(() => {
         createSwellEnergyChart(swellEnergyData);
-        createTideChart(tidePredictions);
+        createTideChart(tidePredictions, tideStation);
         createWaveForecastChart(waveForecastData);
     }, [swellEnergyData, tidePredictions, waveForecastData])
 
     useEffect(() => {
-        getLocationDetails();
         getNDBCData();
+    }, [buoy])
+
+    useEffect(() => {
+        getLocationDetails();
     }, [])
 
     return (
@@ -186,7 +216,7 @@ function ForecastDetails( {...props} ) {
             <div id='forecastDetailsSwell'>
                 <div className='forecastInfoChartContainer'>
                     <div className='forecastInfoContainer'>
-                        <h2 className='forecastInfoTitle'>Waves and Swell</h2>
+                        <h2 className='forecastInfoTitle'>Waves and Swell ({buoy})</h2>
                         <p className='forecastInfoComp'>{waveHeightFT} ft. @ {wavePeriod}s {waveDirStr} {waveDirDeg}°</p>
                         <h2 className='forecastInfoSubtitle'>Swell Components</h2>
                         {swellCompMajor ? 

@@ -67,7 +67,7 @@ export const createSwellEnergyChart = async (swellEnergyData:any) => {
 }
 
 // Creates the following chart with the dataset as input
-export const createTideChart = async (tidePredictions:any) => {
+export const createTideChart = async (tidePredictions:any, tideStation:string) => {
     await (async function() {
         const data = tidePredictions;
 
@@ -103,7 +103,7 @@ export const createTideChart = async (tidePredictions:any) => {
                     labels: data.map(row => `${new Date(row.attributes.t).getHours()}:00`),
                     datasets: [
                         {
-                            label: 'Tide Chart',
+                            label: `Tide Chart - ${tideStation}`,
                             data: data.map(row => Number(row.attributes.v).toFixed(2)),
                             fill: 'start',
                             pointBackgroundColor: 'blue',
