@@ -19,10 +19,11 @@ function Forecasts( {...props} ) {
     const [geoMarkersNorthShore, setGeoMarkersNorthShore] = useState([]);
     const [geoMarkersSouthShore, setGeoMarkersSouthShore] = useState([]);
     const [geoMarkersMaui, setGeoMarkersMaui] = useState([]);
+    const [geoMarkersKauai, setGeoMarkersKauai] = useState([]);
 
     const [loaded, setLoaded] = useState(false);
 
-    const surfSpotsSkeleton = [1, 2, 3, 4, 5, 6];
+    const surfSpotsSkeleton = [1, 2, 3, 4, 5, 6, 7];
 
     const navigate = useNavigate();
 
@@ -44,6 +45,10 @@ function Forecasts( {...props} ) {
         const MauiMarkersRef = query(collection(db, "geoMarkers"), where("cluster", "==", "Maui"));
         const MauiQuerySnapshot = await getDocs(MauiMarkersRef);
         setGeoMarkersMaui(MauiQuerySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id})));
+
+        const KauaiMarkersRef = query(collection(db, "geoMarkers"), where("cluster", "==", "Kauai"));
+        const KauaiQuerySnapshot = await getDocs(KauaiMarkersRef);
+        setGeoMarkersKauai(KauaiQuerySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id})));
     }
 
     useEffect(() => {
@@ -120,6 +125,21 @@ function Forecasts( {...props} ) {
                     </MarkerClusterGroup>
                     <MarkerClusterGroup>
                     {geoMarkersMaui.map((marker:any) => {
+                        function showForecastDetails() {
+                            navigate(`/forecasts/${marker.slug}`);
+                        }
+
+                        return (
+                            <Marker position={marker.coordinates}>
+                                <Popup>
+                                    <h3 onClick={showForecastDetails} className='geoMarkerPopup'>{marker.popup}</h3>
+                                </Popup>
+                            </Marker>
+                        )
+                    })}
+                    </MarkerClusterGroup>
+                    <MarkerClusterGroup>
+                    {geoMarkersKauai.map((marker:any) => {
                         function showForecastDetails() {
                             navigate(`/forecasts/${marker.slug}`);
                         }
