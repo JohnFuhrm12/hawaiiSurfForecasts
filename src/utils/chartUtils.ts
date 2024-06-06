@@ -1,4 +1,5 @@
 import Chart from 'chart.js/auto';
+import { getWaveDirection } from './surfUtils';
 
 // Create a vertical line on hover
 const verticalHover = {
@@ -73,8 +74,6 @@ export const createTideChart = async (tidePredictions:any, tideStation:string) =
 
         let max = 0;
         let min = 0;
-        let maxFound = false;
-        let minFound = false;
 
         data.forEach((point) => {
             if (Number(point.attributes.v) > max) {
@@ -162,6 +161,26 @@ export const createWaveForecastChart = async (waveForecastData:any) => {
             }
         });
 
+        console.log(data)
+
+        // Append additional swell data to tooltip
+        const createFooter = (context) => {
+            let index = context[0].dataIndex;
+
+            let swell1HeightValue = context[0].dataset.swell1Height[index];
+            let swell1DirValue = context[0].dataset.swell1Dir[index];
+            let swell1PeriodValue = context[0].dataset.swell1Period[index];
+
+            let swell2HeightValue = context[0].dataset.swell2Height[index];
+            let swell2DirValue = context[0].dataset.swell2Dir[index];
+            let swell2PeriodValue = context[0].dataset.swell2Period[index];
+
+            let swellCompStr1 = `${swell1HeightValue} ft. @ ${swell1PeriodValue}s ${getWaveDirection(swell1DirValue)} ${swell1DirValue}°`;
+            let swellCompStr2 = `${swell2HeightValue} ft. @ ${swell2PeriodValue}s ${getWaveDirection(swell2DirValue)} ${swell2DirValue}°`;
+
+            return `Swell Components\n${swellCompStr1}\n${swellCompStr2}`;
+        }
+
 
         const poor = (ctx, value) => ctx.p0.parsed.y < 4 ? value : undefined;
         const fair = (ctx, value) => ctx.p0.parsed.y >= 4  ? value : undefined;
@@ -176,6 +195,12 @@ export const createWaveForecastChart = async (waveForecastData:any) => {
                         {
                             label: 'Forecasted Wave Height - NOAA WW3 GFS Model',
                             data: data.map(row => (row.sWVHT * 3.281).toFixed(2)),
+                            swell1Height: data.map(row => (row.swell1Height * 3.281).toFixed(2)),
+                            swell1Dir: data.map(row => row.swell1Dir),
+                            swell1Period: data.map(row => row.swell1Period),
+                            swell2Height: data.map(row => (row.swell2Height * 3.281).toFixed(2)),
+                            swell2Dir: data.map(row => row.swell2Dir),
+                            swell2Period: data.map(row => row.swell2Period),
                             fill: 'start',
                             pointHoverBackgroundColor: 'rgb(0, 119, 255)',
                             segment: {
@@ -186,6 +211,13 @@ export const createWaveForecastChart = async (waveForecastData:any) => {
                     ]
                 },
                 options: {
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                footer: createFooter
+                            }
+                        }
+                    },
                     scales: {
                         x: {
                             ticks: {

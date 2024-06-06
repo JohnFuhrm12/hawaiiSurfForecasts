@@ -189,6 +189,7 @@ function ForecastDetails( {...props} ) {
             // If the run fails, possibly because it has not yet been created, get the previous run
             try {
                 await axios.get(waveWatcher3BackupEndpoint).then((res) => {
+                    console.log(res)
                     const GFS_Current = res.data;
                     setWaveForecastData(GFS_Current);
                 });
