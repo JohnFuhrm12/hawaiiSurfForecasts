@@ -166,6 +166,7 @@ export const createWaveForecastChart = async (waveForecastData:any) => {
         // Append additional swell data to tooltip
         const createFooter = (context) => {
             let index = context[0].dataIndex;
+            let significantWaveHeight = context[0].dataset.data[index];
 
             let swell1HeightValue = context[0].dataset.swell1Height[index];
             let swell1DirValue = context[0].dataset.swell1Dir[index];
@@ -178,7 +179,17 @@ export const createWaveForecastChart = async (waveForecastData:any) => {
             let swellCompStr1 = `${swell1HeightValue} ft. @ ${swell1PeriodValue}s ${getWaveDirection(swell1DirValue)} ${swell1DirValue}°`;
             let swellCompStr2 = `${swell2HeightValue} ft. @ ${swell2PeriodValue}s ${getWaveDirection(swell2DirValue)} ${swell2DirValue}°`;
 
-            return `Swell Components\n${swellCompStr1}\n${swellCompStr2}`;
+            let minSWVHT = Math.floor(significantWaveHeight);
+            let maxSWVHT = Math.ceil(significantWaveHeight);
+
+            let day = context[0].dataset.day[index];
+            if (Number(day) < 10) {
+                day = `0${day}`;
+            }
+
+            let hour = `${context[0].dataset.hour[index]}:00`;
+
+            return `Time: ${day} ${hour}\nWaves: ${minSWVHT}-${maxSWVHT} ft.\nSwell Components\n${swellCompStr1}\n${swellCompStr2}`;
         }
 
 
@@ -201,6 +212,8 @@ export const createWaveForecastChart = async (waveForecastData:any) => {
                             swell2Height: data.map(row => (row.swell2Height * 3.281).toFixed(2)),
                             swell2Dir: data.map(row => row.swell2Dir),
                             swell2Period: data.map(row => row.swell2Period),
+                            day: data.map(row => row.day),
+                            hour: data.map(row => row.hour),
                             fill: 'start',
                             pointHoverBackgroundColor: 'rgb(0, 119, 255)',
                             segment: {
