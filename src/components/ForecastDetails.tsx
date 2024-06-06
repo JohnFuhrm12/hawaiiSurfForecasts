@@ -86,9 +86,22 @@ function ForecastDetails( {...props} ) {
         return `${year}${month}${day}`;
     }
 
+    function getDayBeforeYesterdayDate() {
+        let today = new Date();
+        let yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 2);
+    
+        let year = yesterday.getFullYear();
+        let month = (yesterday.getMonth() + 1).toString().padStart(2, '0');
+        let day = yesterday.getDate().toString().padStart(2, '0');
+    
+        return `${year}${month}${day}`;
+    }
+
     const getNDBCData = async () => {
         const modelDate = getCurrentDate(); // yyyymmdd
         const modelYDate = getYesterdayDate();
+        const modelY2Date = getDayBeforeYesterdayDate();
         const flaskAPIBase = 'https://johnfuhrm12.pythonanywhere.com';
         const mainEndpoint = `${flaskAPIBase}/buoy/${buoy}`;
         const tidesEnpoint = `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?date=today&station=${tideStation}&product=predictions&datum=MLLW&time_zone=gmt&units=english&application=DataAPI_Sample&format=xml`;
@@ -177,6 +190,7 @@ function ForecastDetails( {...props} ) {
 
         const waveWatcher3Endpoint = `${flaskAPIBase}/ww3/${modelDate}/buoy/${buoy}`;
         const waveWatcher3BackupEndpoint = `${flaskAPIBase}/ww3/${modelYDate}/buoy/${buoy}`;
+        const waveWatcher3BackupEndpoint2 = `${flaskAPIBase}/ww3/${modelY2Date}/buoy/${buoy}`;
 
         try {
             await axios.get(waveWatcher3Endpoint).then((res) => {
@@ -189,12 +203,19 @@ function ForecastDetails( {...props} ) {
             // If the run fails, possibly because it has not yet been created, get the previous run
             try {
                 await axios.get(waveWatcher3BackupEndpoint).then((res) => {
-                    console.log(res)
                     const GFS_Current = res.data;
                     setWaveForecastData(GFS_Current);
                 });
             } catch(e) {
-                console.error(e)
+                console.error('Failed to get backup model run, attempting to fetch from 2 days ago.')
+                try {
+                    await axios.get(waveWatcher3BackupEndpoint2).then((res) => {
+                        const GFS_Current = res.data;
+                        setWaveForecastData(GFS_Current);
+                    });
+                } catch(e) {
+                    console.error(e)
+                }
             }
         }
 
