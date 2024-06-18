@@ -161,8 +161,6 @@ export const createWaveForecastChart = async (waveForecastData:any) => {
             }
         });
 
-        console.log(data)
-
         // Append additional swell data to tooltip
         const createFooter = (context) => {
             let index = context[0].dataIndex;

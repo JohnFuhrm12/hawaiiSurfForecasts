@@ -260,39 +260,42 @@ function ForecastDetails( {...props} ) {
                 </div>
             </div>
             <div id='forecastDetailsSwell'>
-                <div className='forecastInfoChartContainer'>
-                    <div className='forecastInfoContainer'>
-                        <h2 className='forecastInfoTitle'>Waves and Swell - {buoy}</h2>
-                        <p className='forecastInfoComp'>{waveHeightFT} ft. @ {wavePeriod}s {waveDirStr} {waveDirDeg}°</p>
-                        <h2 className='forecastInfoSubtitle'>Swell Components</h2>
+                <div id='forecastDetailsInfoRow'>
+                    <div className='forecastDetailsBox'>
+                        <h2 className='forecastInfoBoxTitle'>Waves and Swell - {buoy}</h2>
+                        <p className='forecastInfoBox'>{waveHeightFT} ft. @ {wavePeriod}s {waveDirStr} {waveDirDeg}°</p>
+                    </div>
+                    <div className='forecastDetailsBox'>
+                        <h2 className='forecastInfoBoxTitle'>Swell Components</h2>
                         {swellCompMajor ? 
                             <>
-                            <p className='forecastInfoComp'>{swellCompMajor.wvht} ft. @ {swellCompMajor.period}s {swellCompMajor.dir}</p>
-                            <p className='forecastInfoComp'>{swellCompMinor.wvht} ft. @ {swellCompMinor.period}s {swellCompMinor.dir}</p>
+                            <p className='forecastInfoBox'>{swellCompMajor.wvht} ft. @ {swellCompMajor.period}s {swellCompMajor.dir}</p>
+                            <p className='forecastInfoBox'>{swellCompMinor.wvht} ft. @ {swellCompMinor.period}s {swellCompMinor.dir}</p>
                             </>
                         : <></>}
                     </div>
-                    <div className='forecastChartContainer'>
-                        <canvas id="swellEnergy"></canvas>
+                    <div className='forecastDetailsBox'>
+                        <h2 className='forecastInfoBoxTitle'>Local Wind</h2>
+                        <p className='forecastInfoBox'>{localWeather?.wind.speed} mph {getWaveDirection(localWeather?.wind.deg)} {localWeather?.wind.deg}°</p> 
+                    </div>
+                    <div className='forecastDetailsBox'>
+                        <h2 className='forecastInfoBoxTitleSmall'>Air Temperature</h2>
+                        <p className='forecastInfoBox'>{(((localWeather?.main.temp * 9) / 5) - 459.67).toFixed(1)}°F</p> 
+                        <h2 className='forecastInfoBoxTitleSmall'>Water Temperature</h2>
+                        <p className='forecastInfoBox'>{waterTempF}°F</p> 
                     </div>
                 </div>
                 <div className='forecastInfoChartContainer'>
-                    <div className='forecastInfoContainer'>
-                        <h2 className='forecastInfoTitle'>Weather</h2>
-                        <h2 className='forecastInfoSubtitle'>Local Wind</h2>
-                        <p className='forecastInfoComp'>{localWeather?.wind.speed} mph {getWaveDirection(localWeather?.wind.deg)} {localWeather?.wind.deg}°</p> 
-                        <h2 className='forecastInfoSubtitle'>Air Temperature</h2>
-                        <p className='forecastInfoComp'>{(((localWeather?.main.temp * 9) / 5) - 459.67).toFixed(1)}°F</p> 
-                        <h2 className='forecastInfoSubtitle'>Water Temperature</h2>
-                        <p className='forecastInfoComp'>{waterTempF}°F</p> 
+                    <div className='forecastChartContainer'>
+                        <canvas className='forecastDetailsChart' id="swellEnergy"></canvas>
                     </div>
                     <div className='forecastChartContainer'>
-                        <canvas id="tideChart"></canvas>
+                        <canvas className='forecastDetailsChart' id="tideChart"></canvas>
                     </div>
                 </div>
             </div>
-            <div id='ww3ForeacastChartContainer'>
-                <canvas id="forecastChart"></canvas>
+            <div id='ww3ForecastChartContainer'>
+                <canvas className='forecastDetailsChart' id="forecastChart"></canvas>
             </div>
         </div>
     )
