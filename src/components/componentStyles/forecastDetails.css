@@ -69,6 +69,7 @@
     margin-top: 30px;
     height: 320px;
     padding-inline: 2%;
+    gap: 20px;
 }
 
 .forecastInfoContainer {

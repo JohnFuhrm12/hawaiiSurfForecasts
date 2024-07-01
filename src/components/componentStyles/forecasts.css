@@ -21,6 +21,7 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
+    padding-bottom: 20px;
 }
 
 #forecastsTitle {
@@ -28,7 +29,7 @@
 }
 
 .locationCard {
-    width: 260px;
+    width: 250px;
     border-radius: 10px;
     background-color: white;
     padding-bottom: 10px;
@@ -47,7 +48,6 @@
     height: 160px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    object-fit: cover;
 }
 
 .locationCardName {
@@ -61,7 +61,7 @@
 }
 
 .locationCardSkeleton {
-    width: 260px;
+    width: 250px;
     border-radius: 10px;
     background-color: white;
     padding-bottom: 10px;
