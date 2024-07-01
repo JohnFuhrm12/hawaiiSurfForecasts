@@ -10,12 +10,13 @@
 
 .signupLoginTitle {
     margin-bottom: 0;
+    font-size: 28px;
 }
 
 .signupLoginSubtitle {
     margin-top: 10px;
     margin-bottom: 30px;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .signupLoginSubtitleColor {
@@ -39,7 +40,7 @@
 }
 
 .loginSignupInput {
-    font-size: 20px;
+    font-size: 18px;
     outline: none;
     border: none;
     border-bottom: solid 2px black;
@@ -49,16 +50,16 @@
 .loginSignupButton {
     background-color: var(--brand-blue);
     color: var(--brand-text);
-    font-size: 25px;
+    font-size: 20px;
     transition: 0.5s;
-    width: 60%;
+    width: 45%;
     margin: 0 auto;
     padding: 10px;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     border: solid 4px var(--brand-blue);
     border-radius: 5px;
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
 .loginSignupButton:hover {

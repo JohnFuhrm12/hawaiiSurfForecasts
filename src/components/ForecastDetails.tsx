@@ -222,6 +222,10 @@ function ForecastDetails( {...props} ) {
     }
 
     useEffect(() => {
+        getLocationDetails();
+    }, [])
+
+    useEffect(() => {
         createSwellEnergyChart(swellEnergyData);
         createTideChart(tidePredictions, tideStation);
         createWaveForecastChart(waveForecastData);
@@ -229,17 +233,11 @@ function ForecastDetails( {...props} ) {
 
     useEffect(() => {
         getNDBCData();
-        console.log('ran get data')
     }, [buoy])
 
     useEffect(() => {
         getLocalWeather();
     }, [location])
-
-    useEffect(() => {
-        getLocationDetails();
-        console.log('ran get buoy')
-    }, [])
 
     return (
         <div id='forecastDetailsContainer'>
