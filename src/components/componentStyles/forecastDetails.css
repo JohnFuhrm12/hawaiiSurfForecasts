@@ -16,8 +16,8 @@
 }
 
 #forecastDetailsMainImg {
-    width: 580px;
-    height: 400px;
+    width: 550px;
+    height: 310px;
     border-radius: 20px;
     box-shadow: 10px 5px 5px rgba(0,0,0,.34);
     object-fit: cover;
@@ -47,7 +47,7 @@
     background-color: white;
     padding: 20px;
     border-radius: 10px;
-    height: 250px;
+    height: fit-content;
     overflow: auto;
 }
 

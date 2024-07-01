@@ -36,7 +36,7 @@ function Home( {...props} ) {
         </div>
         <div className='homeSectionSplit'>
           <div>
-            <ReactPlayer className="liveCam" url='https://www.youtube.com/watch?v=VI8Wj5EwoRM' playing muted controls/>
+            <ReactPlayer width={'550px'} height={'310px'} className="liveCam" url='https://www.youtube.com/watch?v=VI8Wj5EwoRM' playing muted controls/>
             <h2 className='sectionTitle sectionTitleLeft'>Pipeline Live Cam</h2>
             <Link className="sectionLink" to='/forecasts'>View All Forecasts</Link>
           </div>

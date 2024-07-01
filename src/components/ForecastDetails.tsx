@@ -245,7 +245,7 @@ function ForecastDetails( {...props} ) {
             <div id='forecastDetailsTop'>
                 {location?.hasCam ? 
                 <div id='forecastDetailsTopLeftCam'>
-                    <ReactPlayer id="forecastDetailsLiveCam" url={location.camLink} playing muted controls/> 
+                    <ReactPlayer width={'550px'} height={'310px'} id="forecastDetailsLiveCam" url={location.camLink} playing muted controls/> 
                 </div>
                 : 
                 <div id='forecastDetailsTopLeft'>
