@@ -229,6 +229,7 @@ function ForecastDetails( {...props} ) {
 
     useEffect(() => {
         getNDBCData();
+        console.log('ran get data')
     }, [buoy])
 
     useEffect(() => {
@@ -237,6 +238,7 @@ function ForecastDetails( {...props} ) {
 
     useEffect(() => {
         getLocationDetails();
+        console.log('ran get buoy')
     }, [])
 
     return (
@@ -244,8 +246,8 @@ function ForecastDetails( {...props} ) {
             <h1 id='forecastDetailsTitle'>{location?.name} Surf Report</h1>
             <div id='forecastDetailsTop'>
                 {location?.hasCam ? 
-                <div id='forecastDetailsTopLeft'>
-                    <ReactPlayer className="liveCam" url={location.camLink} playing muted controls/> 
+                <div id='forecastDetailsTopLeftCam'>
+                    <ReactPlayer id="forecastDetailsLiveCam" url={location.camLink} playing muted controls/> 
                 </div>
                 : 
                 <div id='forecastDetailsTopLeft'>
