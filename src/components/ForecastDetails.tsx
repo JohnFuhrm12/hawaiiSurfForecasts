@@ -4,9 +4,10 @@ import { xml2json } from 'xml-js';
 import axios from 'axios';
 import firebaseInit from './firebaseConfig';
 import { getFirestore } from "firebase/firestore";
-import { collection, query, getDocs, where } from "firebase/firestore";
+import { collection, query, getDoc, getDocs, where, updateDoc, arrayRemove, arrayUnion, doc } from "firebase/firestore";
 import { getWaveDirection } from '../utils/surfUtils';
 import { createSwellEnergyChart, createTideChart, createWaveForecastChart } from '../utils/chartUtils';
+import { toast } from 'react-toastify';
 import ReactPlayer from 'react-player/lazy';
 import './componentStyles/forecastDetails.css';
 
@@ -35,6 +36,9 @@ function ForecastDetails( {...props} ) {
     const [tideStation, setTideStation] = useState<String>();
 
     const [localWeather, setLocalWeather] = useState();
+    const [currentRating, setCurrentRating] = useState('Fair');
+
+    const [favoritesStatus, setFavoritesStatus] = useState('Favorite');
 
     const [location, setLocation] = useState(null);
     const params = useParams();
@@ -239,6 +243,94 @@ function ForecastDetails( {...props} ) {
         getLocalWeather();
     }, [location])
 
+    if (waveHeightFT === undefined) {
+        getLocationDetails();
+    }
+
+    useEffect(() => {
+        const bubble = document.getElementById("surfHeightBubble");
+
+        // Current Rating Depends ONLY on wind right now
+        // Future rating should take wave height and wind direction into account
+
+        if (localWeather?.wind.speed < 8) {
+            bubble.style.backgroundColor = 'orange';
+            setCurrentRating('Good');
+        }
+
+        if (localWeather?.wind.speed < 15 && localWeather?.wind.speed > 10) {
+            bubble.style.backgroundColor = 'lime';
+            setCurrentRating('Fair');
+        }
+
+        if (localWeather?.wind.speed >= 15) {
+            bubble.style.backgroundColor = 'blue';
+            setCurrentRating('Poor');
+        }
+
+        if (waveHeightFT < 1) {
+            bubble.style.backgroundColor = 'gray';
+            setCurrentRating('Flat');
+        }
+    })  
+
+    const getFavoritesStatus = async () => {
+        const currentUserDetails = props.currentUserDetails;
+        // let favoriteSpots = currentUserDetails?.favorites || [];
+        const spotName = location.name;
+
+        const userRef = doc(db, "users", currentUserDetails.email);
+        const docSnap = await getDoc(userRef);
+
+        if (docSnap.exists()) {
+            let favoriteSpots = docSnap.data().favorites;
+
+            console.log(favoriteSpots)
+            console.log(spotName)
+            console.log(favoriteSpots.includes(spotName))
+
+            if (favoriteSpots.includes(spotName)) {
+                console.log('INCLUDES')
+                setFavoritesStatus('Un-Favorite');
+            } else {
+                setFavoritesStatus('Favorite')
+            }
+        }
+    }
+
+    const addToFavorites = async () => {
+        // get from firebase favorites list
+        // if not in favorite add it, otherwise remove it
+        const currentUserDetails = props.currentUserDetails;
+        let favoriteSpots = currentUserDetails?.favorites || [];
+        const spotName = location.name;
+
+        const userRef = doc(db, "users", currentUserDetails.email);
+        const docSnap = await getDoc(userRef);
+
+        if (docSnap.exists()) {
+            favoriteSpots = docSnap.data().favorites;
+        }
+
+        if (favoriteSpots.includes(spotName)) {
+            await updateDoc(doc(db, "users", currentUserDetails.email), {
+                favorites: arrayRemove(spotName)
+              });
+              setFavoritesStatus('Favorite');
+              return toast.success(`Removed ${spotName} from Favorites`);
+        } else {
+            await updateDoc(doc(db, "users", currentUserDetails.email), {
+                favorites: arrayUnion(spotName)
+              });
+              setFavoritesStatus('Un-Favorite');
+              return toast.success(`Added ${spotName} to Favorites`);
+        }
+    }
+
+    useEffect(() => {
+        getFavoritesStatus();
+    }, [location])
+
     return (
         <div id='forecastDetailsContainer'>
             <h1 id='forecastDetailsTitle'>{location?.name} Surf Report</h1>
@@ -254,8 +346,9 @@ function ForecastDetails( {...props} ) {
                 }
                 <div id='forecastDetailsTopRight'>
                     <div id='surfHeightBubble'>
-                        <h2 id='surfBubbleText'>{Math.floor(waveHeightFT)}-{Math.ceil(waveHeightFT)} ft. - Fair</h2>
+                        <h2 id='surfBubbleText'>{Math.floor(waveHeightFT)}-{Math.ceil(waveHeightFT)} ft. - {currentRating}</h2>
                     </div>
+                    <button className='favoriteButton' onClick={addToFavorites}>{favoritesStatus}</button>
                     <p id='locationDesc'>{location?.desc}</p>
                 </div>
             </div>

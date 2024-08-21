@@ -1,0 +1,18 @@
+#favoritesContainer {
+    background-color: rgb(239, 239, 239);
+    padding-inline: 5%;
+    height: 100vh;
+}
+
+#favoritesTitle {
+    margin-top: 0;
+    padding-top: 20px;
+}
+
+#forecastsGridFavorites {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding-bottom: 20px;
+    width: fit-content;
+}
