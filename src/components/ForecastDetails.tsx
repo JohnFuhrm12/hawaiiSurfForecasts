@@ -348,7 +348,11 @@ function ForecastDetails( {...props} ) {
                     <div id='surfHeightBubble'>
                         <h2 id='surfBubbleText'>{Math.floor(waveHeightFT)}-{Math.ceil(waveHeightFT)} ft. - {currentRating}</h2>
                     </div>
+                    {props.currentUser !== null ? 
                     <button className='favoriteButton' onClick={addToFavorites}>{favoritesStatus}</button>
+                    :
+                    <></>
+                    }
                     <p id='locationDesc'>{location?.desc}</p>
                 </div>
             </div>

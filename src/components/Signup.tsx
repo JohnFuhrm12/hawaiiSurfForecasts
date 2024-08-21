@@ -30,7 +30,8 @@ function Signup ( {...props} ) {
         await setDoc(doc(db, "users", email), {
             name: name,
             email: email,
-            userID: user.uid
+            userID: user.uid,
+            favorites: []
           });
     }
 

@@ -16,9 +16,12 @@ function Favorites( {...props} ) {
 
     const navigate = useNavigate();
 
-    if (currentUser === null) {
-        navigate('/login')
-    }
+    useEffect(() => {
+        if (currentUser === null) {
+            navigate('/login');
+        }
+
+    }, [currentUser])
 
     const [surfSpots, setSurfSpots] = useState([]);
 
@@ -53,6 +56,11 @@ function Favorites( {...props} ) {
             <h1 id='favoritesTitle'>Your Favorites</h1>
             :         
             <h1 id='favoritesTitle'>{`${currentUserDetails.name}'s`} Favorites</h1>}
+            {surfSpots.length === 0 ? 
+            <h2 id='favoritesNoneTitle'>No Favorites Yet!</h2>
+            :
+            <></>
+            }
             <div id='forecastsGridFavorites'>
                 {surfSpots.map((location:any) => {
                     function showForecastDetails() {
