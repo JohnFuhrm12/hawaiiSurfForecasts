@@ -174,8 +174,12 @@ export const createWaveForecastChart = async (waveForecastData:any) => {
             let swell2DirValue = context[0].dataset.swell2Dir[index];
             let swell2PeriodValue = context[0].dataset.swell2Period[index];
 
-            let swellCompStr1 = `${swell1HeightValue} ft. @ ${swell1PeriodValue}s ${getWaveDirection(swell1DirValue)} ${swell1DirValue}°`;
-            let swellCompStr2 = `${swell2HeightValue} ft. @ ${swell2PeriodValue}s ${getWaveDirection(swell2DirValue)} ${swell2DirValue}°`;
+            let swellCompStr1 = `🌊 ${swell1HeightValue} ft. @ ${swell1PeriodValue}s ${getWaveDirection(swell1DirValue)} ${swell1DirValue}°`;
+            let swellCompStr2 = `🌊 ${swell2HeightValue} ft. @ ${swell2PeriodValue}s ${getWaveDirection(swell2DirValue)} ${swell2DirValue}°`;
+
+            if (swell2PeriodValue === undefined) {
+                swellCompStr2 = '';
+            }
 
             let minSWVHT = Math.floor(significantWaveHeight);
             let maxSWVHT = Math.ceil(significantWaveHeight);
@@ -187,7 +191,23 @@ export const createWaveForecastChart = async (waveForecastData:any) => {
 
             let hour = `${context[0].dataset.hour[index]}:00`;
 
-            return `Time: ${day} ${hour}\nWaves: ${minSWVHT}-${maxSWVHT} ft.\nSwell Components\n${swellCompStr1}\n${swellCompStr2}`;
+            let time = hour.split(':');
+            let hours = Number(time[0]);
+            let minutes = Number(time[1]);
+
+            let timeValue;
+            if (hours > 0 && hours <= 12) {
+                timeValue = "" + hours;
+            } else if (hours > 12) {
+                timeValue = "" + (hours - 12);
+            } else if (hours == 0) { 
+                timeValue = "12";
+            }
+
+            timeValue += (minutes < 10) ? ":0" + minutes : ":" + minutes;  // get minutes
+            timeValue += (hours >= 12) ? " P.M." : " A.M.";  // get AM/PM
+
+            return `🕑 Hour: ${timeValue}\n🌊 Waves: ${minSWVHT}-${maxSWVHT} ft.\nSwell Components\n${swellCompStr1}\n${swellCompStr2}`;
         }
 
 
