@@ -31,6 +31,7 @@ function ForecastDetails( {...props} ) {
     const [swellEnergyData, setSwellEnergyData] = useState();
     const [tidePredictions, setTidePredictions] = useState();
     const [waveForecastData, setWaveForecastData] = useState();
+    const [compressedWaveForecastData, setCompressedWaveForecastData] = useState([]);
 
     const [buoy, setBuoy] = useState<String>();
     const [tideStation, setTideStation] = useState<String>();
@@ -285,10 +286,6 @@ function ForecastDetails( {...props} ) {
         if (docSnap.exists()) {
             let favoriteSpots = docSnap.data().favorites;
 
-            console.log(favoriteSpots)
-            console.log(spotName)
-            console.log(favoriteSpots.includes(spotName))
-
             if (favoriteSpots.includes(spotName)) {
                 console.log('INCLUDES')
                 setFavoritesStatus('Un-Favorite');
@@ -330,6 +327,57 @@ function ForecastDetails( {...props} ) {
     useEffect(() => {
         getFavoritesStatus();
     }, [location])
+
+    // Compress data into 1 day each and add smallest and largest found wave heights to get a range for the day
+    function formatForecastData(data:any) {
+        const map = new Map();
+
+        data.forEach(entry => {
+            if (!map.has(entry.day)) {
+              // Initialize with current entry's values
+              map.set(entry.day, {
+                entry,
+                minWVHT: entry.sWVHT,
+                maxWVHT: entry.sWVHT
+              });
+            } else {
+              const dayData = map.get(entry.day);
+        
+              // Update minWVHT and maxWVHT
+              dayData.minWVHT = Math.min(dayData.minWVHT, entry.sWVHT);
+              dayData.maxWVHT = Math.max(dayData.maxWVHT, entry.sWVHT);
+        
+              // Update the entry with the highest sWVHT
+              if (entry.sWVHT > dayData.entry.sWVHT) {
+                dayData.entry = entry;
+              }
+            }
+          });
+
+          setCompressedWaveForecastData(Array.from(map.values()).map(dayData => ({
+            ...dayData.entry,
+            minWVHT: dayData.minWVHT,
+            maxWVHT: dayData.maxWVHT
+          })))
+        
+          // Extract the final entries from the map and add minWVHT and maxWVHT
+          return Array.from(map.values()).map(dayData => ({
+            ...dayData.entry,
+            minWVHT: dayData.minWVHT,
+            maxWVHT: dayData.maxWVHT
+          }));
+    }
+
+    useEffect(() => {
+        console.log(waveForecastData)
+        // get data for each day, compress data to 1 for each day and make boxes for each day with wave height and quality
+        if (waveForecastData) {
+            if (waveForecastData.length > 0) {
+            formatForecastData(waveForecastData);
+            console.log(formatForecastData(waveForecastData))
+            }
+        }
+    }, [waveForecastData])
 
     return (
         <div id='forecastDetailsContainer'>
@@ -391,8 +439,30 @@ function ForecastDetails( {...props} ) {
                     </div>
                 </div>
             </div>
-            <div id='ww3ForecastChartContainer'>
-                <canvas className='forecastDetailsChart' id="forecastChart"></canvas>
+            <div id='forecastSection'>
+                <h2 id='forecastSectionTitle'>Surf Forecast</h2>
+                <div id='forecastDaysContainer'>
+                    {compressedWaveForecastData?.map((day:any) => {
+                        const waveHeightMin = Math.floor(Number((day.minWVHT * 3.281).toFixed(2)));
+                        const waveHeightMax = Math.ceil(Number((day.maxWVHT * 3.281).toFixed(2)));
+                        let quality = 'lime';
+
+                        if (waveHeightMax < 5) {
+                            quality = 'red';
+                        }
+
+                        return (
+                            <div className='forecastDayBox'>
+                                <p className='forecastDayText'>Day: {day.day}</p>
+                                <p className='forecastDayText'>{waveHeightMin} - {waveHeightMax} ft.</p>
+                                <div className='dayQuality' style={{ backgroundColor: quality}}/>
+                            </div>
+                        )
+                    })}
+                </div>
+                <div id='ww3ForecastChartContainer'>
+                    <canvas className='forecastDetailsChart' id="forecastChart"></canvas>
+                </div>
             </div>
         </div>
     )
