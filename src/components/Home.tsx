@@ -13,7 +13,8 @@ function Home( {...props} ) {
   const [topArticles, setTopArticles] = useState([]);
   const layerControlRef = useRef();
 
-  const newsAPIKey = process.env.REACT_APP_NEWS_API_KEY;
+  // const newsAPIKey = process.env.REACT_APP_NEWS_API_KEY;
+  const newsAPIKey = '4f7d36bbdbd84a278cd1d75f2709bf42';
   const navigate = useNavigate();
 
   useEffect(() => {

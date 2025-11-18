@@ -6,7 +6,7 @@ function firebaseInit() {
     const firebaseKey = process.env.REACT_APP_FIREBASE_API_KEY;
 
     const firebaseConfig = {
-    apiKey: firebaseKey,
+    apiKey: 'AIzaSyAok5CHwsVoXvW9UvRwaBNLo3EYnVbTTqI',
     authDomain: "hawaiisurf-60fce.firebaseapp.com",
     projectId: "hawaiisurf-60fce",
     storageBucket: "hawaiisurf-60fce.appspot.com",
