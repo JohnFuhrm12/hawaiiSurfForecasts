@@ -4,15 +4,14 @@ import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, useMap, LayersControl, Marker, Popup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 
-import firebaseInit from './firebaseConfig';
+import app from "./firebaseConfig";
 import { getFirestore } from "firebase/firestore";
+const db = getFirestore(app);
+
 import { collection, query, getDocs, where } from "firebase/firestore";
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
-firebaseInit();
-const app = firebaseInit();
-const db = getFirestore(app);
 
 function Forecasts( {...props} ) {
     const [surfSpots, setSurfSpots] = useState([]);

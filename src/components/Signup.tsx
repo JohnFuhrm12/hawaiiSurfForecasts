@@ -3,15 +3,13 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import './componentStyles/loginsSignup.css';
 
-import firebaseInit from './firebaseConfig';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import app from "./firebaseConfig";
 import { getFirestore } from "firebase/firestore";
-import { doc, setDoc } from "firebase/firestore"; 
-
-firebaseInit();
-const auth = getAuth();
-const app = firebaseInit();
 const db = getFirestore(app);
+
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore"; 
+const auth = getAuth();
 
 function Signup ( {...props} ) {
     const [name, setName] = useState('');

@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { xml2json } from 'xml-js';
 import axios from 'axios';
-import firebaseInit from './firebaseConfig';
+import app from "./firebaseConfig";
 import { getFirestore } from "firebase/firestore";
+const db = getFirestore(app);
+
 import {
     collection,
     query,
@@ -20,9 +22,6 @@ import { createSwellEnergyChart, createTideChart, createWaveForecastChart } from
 import { toast } from 'react-toastify';
 import ReactPlayer from 'react-player/lazy';
 import './componentStyles/forecastDetails.css';
-
-const app = firebaseInit();
-const db = getFirestore(app);
 
 function ForecastDetails({ ...props }) {
     const [currentNDBCData, setCurrentNDBCData] = useState<any>({});
@@ -122,153 +121,153 @@ function ForecastDetails({ ...props }) {
         return `${year}${month}${day}`;
     }
 
-const getNDBCData = async () => {
-    if (!buoy || !tideStation) return;
+    const getNDBCData = async () => {
+        if (!buoy || !tideStation) return;
 
-    const modelDate = getCurrentDate();
-    const modelYDate = getYesterdayDate();
-    const modelY2Date = getDayBeforeYesterdayDate();
-    const flaskAPIBase = "https://ndbc-buoy-data.onrender.com";
+        const modelDate = getCurrentDate();
+        const modelYDate = getYesterdayDate();
+        const modelY2Date = getDayBeforeYesterdayDate();
+        const flaskAPIBase = "https://ndbc-buoy-data.onrender.com";
 
-    /* ----------------------------------------
-       1. TIDES (XML → JSON)
-    ---------------------------------------- */
-    const tidesEndpoint = `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?date=today&station=${tideStation}&product=predictions&datum=MLLW&time_zone=gmt&units=english&application=DataAPI_Sample&format=xml`;
+        /* ----------------------------------------
+        1. TIDES (XML → JSON)
+        ---------------------------------------- */
+        const tidesEndpoint = `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?date=today&station=${tideStation}&product=predictions&datum=MLLW&time_zone=gmt&units=english&application=DataAPI_Sample&format=xml`;
 
-    try {
-        const res = await axios.get(tidesEndpoint);
-        const noaaTidesXML = res.data;
-        const jsonData = xml2json(noaaTidesXML, { compact: false, spaces: 4 });
-        const jsonRes = JSON.parse(jsonData);
+        try {
+            const res = await axios.get(tidesEndpoint);
+            const noaaTidesXML = res.data;
+            const jsonData = xml2json(noaaTidesXML, { compact: false, spaces: 4 });
+            const jsonRes = JSON.parse(jsonData);
 
-        const predictions = jsonRes.elements?.[0]?.elements || [];
-        const dataArr: any[] = [];
+            const predictions = jsonRes.elements?.[0]?.elements || [];
+            const dataArr: any[] = [];
 
-        for (let i = 0; i < predictions.length; i += 3) {
-            dataArr.push(predictions[i]);
+            for (let i = 0; i < predictions.length; i += 3) {
+                dataArr.push(predictions[i]);
+            }
+
+            setTidePredictions(dataArr);
+        } catch (err) {
+            console.error("TIDE API ERROR:", err);
         }
 
-        setTidePredictions(dataArr);
-    } catch (err) {
-        console.error("TIDE API ERROR:", err);
-    }
+        /* ----------------------------------------
+        Utility: get MOST RECENT valid number
+        ---------------------------------------- */
+        const getLatestValid = (rows: any[], key: string) => {
+            for (const r of rows) {
+                const val = r[key];
+                if (val !== undefined && val !== null && !isNaN(Number(val))) {
+                    return Number(val);
+                }
+            }
+            return null;
+        };
 
-    /* ----------------------------------------
-       Utility: get MOST RECENT valid number
-    ---------------------------------------- */
-    const getLatestValid = (rows: any[], key: string) => {
-        for (const r of rows) {
-            const val = r[key];
-            if (val !== undefined && val !== null && !isNaN(Number(val))) {
-                return Number(val);
+        /* ----------------------------------------
+        2. NDBC MAIN (Wave Height, Period, Temp)
+        ---------------------------------------- */
+        const mainEndpoint = `${flaskAPIBase}/buoy/${buoy}`;
+
+        try {
+            const res = await axios.get(mainEndpoint);
+            const rows = res.data || [];
+
+            console.log("NDBC Current Data:", rows);
+
+            const WVHT = getLatestValid(rows, "WVHT");
+            const DPD  = getLatestValid(rows, "DPD");
+            const MWD  = getLatestValid(rows, "MWD");
+            const WTMP = getLatestValid(rows, "WTMP");
+
+            if (WVHT === null) {
+                console.warn("No valid WVHT found");
+                return;
+            }
+
+            // Wave height meters → feet
+            const waveFt = Math.round(WVHT * 3.281 * 10) / 10;
+            setWaveHeightFT(waveFt);
+
+            if (DPD !== null) setWavePeriod(DPD);
+            if (MWD !== null) {
+                setWaveDirDeg(MWD);
+                setWaveDirStr(getWaveDirection(MWD));
+            }
+
+            if (WTMP !== null) {
+                setWaterTempC(WTMP);
+                setWaterTempF(Number((WTMP * 9/5 + 32).toFixed(1)));
+            }
+        } catch (err) {
+            console.error("NDBC MAIN ERROR:", err);
+        }
+
+        /* ----------------------------------------
+        3. NDBC SPECTRAL SUMMARY
+        ---------------------------------------- */
+        const spectralSummaryEndpoint = `${flaskAPIBase}/buoy/${buoy}/spectral`;
+
+        try {
+            const res = await axios.get(spectralSummaryEndpoint);
+            const rows = res.data || [];
+
+            // Get newest valid swell components
+            const SwH  = getLatestValid(rows, "SwH");
+            const SwP  = getLatestValid(rows, "SwP");
+            const SwD  = getLatestValid(rows, "SwD");
+
+            const WWH = getLatestValid(rows, "WWH");
+            const WWP = getLatestValid(rows, "WWP");
+            const WWD = getLatestValid(rows, "WWD");
+
+            setSwellCompMajor({
+                wvht: SwH || 0,
+                period: SwP || 0,
+                dir: SwD || 0
+            });
+
+            setSwellCompMinor({
+                wvht: WWH || 0,
+                period: WWP || 0,
+                dir: WWD || 0
+            });
+        } catch (err) {
+            console.error("SPECTRAL SUMMARY ERROR:", err);
+        }
+
+        /* ----------------------------------------
+        4. SWELL ENERGY (RAW PAIRS)
+        ---------------------------------------- */
+        const spectralRawPairsEndpoint = `${flaskAPIBase}/buoy/${buoy}/spectral/raw/pairs`;
+
+        try {
+            const res = await axios.get(spectralRawPairsEndpoint);
+            setSwellEnergyData(res.data);
+        } catch (err) {
+            console.error("RAW SPECTRAL PAIRS ERROR:", err);
+        }
+
+        /* ----------------------------------------
+        5. WW3 MODEL (Today → Yesterday → 2 Days)
+        ---------------------------------------- */
+        const ww3Endpoints = [
+            `${flaskAPIBase}/ww3/${modelDate}/buoy/${buoy}`,
+            `${flaskAPIBase}/ww3/${modelYDate}/buoy/${buoy}`,
+            `${flaskAPIBase}/ww3/${modelY2Date}/buoy/${buoy}`
+        ];
+
+        for (const url of ww3Endpoints) {
+            try {
+                const res = await axios.get(url);
+                setWaveForecastData(res.data);
+                break;
+            } catch (err) {
+                console.warn("WW3 fetch failed:", url);
             }
         }
-        return null;
     };
-
-    /* ----------------------------------------
-       2. NDBC MAIN (Wave Height, Period, Temp)
-    ---------------------------------------- */
-    const mainEndpoint = `${flaskAPIBase}/buoy/${buoy}`;
-
-    try {
-        const res = await axios.get(mainEndpoint);
-        const rows = res.data || [];
-
-        console.log("NDBC Current Data:", rows);
-
-        const WVHT = getLatestValid(rows, "WVHT");
-        const DPD  = getLatestValid(rows, "DPD");
-        const MWD  = getLatestValid(rows, "MWD");
-        const WTMP = getLatestValid(rows, "WTMP");
-
-        if (WVHT === null) {
-            console.warn("No valid WVHT found");
-            return;
-        }
-
-        // Wave height meters → feet
-        const waveFt = Math.round(WVHT * 3.281 * 10) / 10;
-        setWaveHeightFT(waveFt);
-
-        if (DPD !== null) setWavePeriod(DPD);
-        if (MWD !== null) {
-            setWaveDirDeg(MWD);
-            setWaveDirStr(getWaveDirection(MWD));
-        }
-
-        if (WTMP !== null) {
-            setWaterTempC(WTMP);
-            setWaterTempF(Number((WTMP * 9/5 + 32).toFixed(1)));
-        }
-    } catch (err) {
-        console.error("NDBC MAIN ERROR:", err);
-    }
-
-    /* ----------------------------------------
-       3. NDBC SPECTRAL SUMMARY
-    ---------------------------------------- */
-    const spectralSummaryEndpoint = `${flaskAPIBase}/buoy/${buoy}/spectral`;
-
-    try {
-        const res = await axios.get(spectralSummaryEndpoint);
-        const rows = res.data || [];
-
-        // Get newest valid swell components
-        const SwH  = getLatestValid(rows, "SwH");
-        const SwP  = getLatestValid(rows, "SwP");
-        const SwD  = getLatestValid(rows, "SwD");
-
-        const WWH = getLatestValid(rows, "WWH");
-        const WWP = getLatestValid(rows, "WWP");
-        const WWD = getLatestValid(rows, "WWD");
-
-        setSwellCompMajor({
-            wvht: SwH || 0,
-            period: SwP || 0,
-            dir: SwD || 0
-        });
-
-        setSwellCompMinor({
-            wvht: WWH || 0,
-            period: WWP || 0,
-            dir: WWD || 0
-        });
-    } catch (err) {
-        console.error("SPECTRAL SUMMARY ERROR:", err);
-    }
-
-    /* ----------------------------------------
-       4. SWELL ENERGY (RAW PAIRS)
-    ---------------------------------------- */
-    const spectralRawPairsEndpoint = `${flaskAPIBase}/buoy/${buoy}/spectral/raw/pairs`;
-
-    try {
-        const res = await axios.get(spectralRawPairsEndpoint);
-        setSwellEnergyData(res.data);
-    } catch (err) {
-        console.error("RAW SPECTRAL PAIRS ERROR:", err);
-    }
-
-    /* ----------------------------------------
-       5. WW3 MODEL (Today → Yesterday → 2 Days)
-    ---------------------------------------- */
-    const ww3Endpoints = [
-        `${flaskAPIBase}/ww3/${modelDate}/buoy/${buoy}`,
-        `${flaskAPIBase}/ww3/${modelYDate}/buoy/${buoy}`,
-        `${flaskAPIBase}/ww3/${modelY2Date}/buoy/${buoy}`
-    ];
-
-    for (const url of ww3Endpoints) {
-        try {
-            const res = await axios.get(url);
-            setWaveForecastData(res.data);
-            break;
-        } catch (err) {
-            console.warn("WW3 fetch failed:", url);
-        }
-    }
-};
 
 
     const getFavoritesStatus = async () => {

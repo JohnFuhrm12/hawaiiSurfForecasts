@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import './componentStyles/favorites.css';
 
-import firebaseInit from './firebaseConfig';
+import app from "./firebaseConfig";
 import { getFirestore } from "firebase/firestore";
+const db = getFirestore(app);
+
 import { collection, query, getDoc, getDocs, where, doc } from "firebase/firestore";
 import { useNavigate } from 'react-router';
 
-firebaseInit();
-const app = firebaseInit();
-const db = getFirestore(app);
 
 function Favorites( {...props} ) {
     const currentUser = props.currentUser;

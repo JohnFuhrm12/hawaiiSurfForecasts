@@ -1,16 +1,15 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import firebaseInit from "./firebaseConfig";
 import { toast } from 'react-toastify';
 import './componentStyles/loginsSignup.css';
 
-firebaseInit();
-const auth = getAuth();
-const app = firebaseInit();
+import app from "./firebaseConfig";
+import { getFirestore } from "firebase/firestore";
 const db = getFirestore(app);
+const auth = getAuth();
+
 
 function Login( {...props} ) {
     const [email, setEmail] = useState('');

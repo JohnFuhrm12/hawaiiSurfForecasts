@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
 import { getAuth, signOut } from "firebase/auth";
 import { toast } from 'react-toastify';
-import firebaseInit from './firebaseConfig';
 import './componentStyles/navbar.css';
 
-firebaseInit();
+import app from "./firebaseConfig";
+import { getFirestore } from "firebase/firestore";
+const db = getFirestore(app);
+
 const auth = getAuth(); 
 
 function Navbar( {...props} ) {
